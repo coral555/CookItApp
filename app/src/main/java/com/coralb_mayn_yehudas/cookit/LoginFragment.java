@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment;
 public class LoginFragment extends Fragment {
 
     public LoginFragment() {
-        // חובה קונסטרקטור ריק
+        // empty constructor
     }
 
     @Nullable
@@ -19,7 +19,7 @@ public class LoginFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        // מחזיר את התצוגה של טופס ההתחברות
+        // Returns the login form view
         return inflater.inflate(R.layout.fragment_login, container, false);
     }
 }

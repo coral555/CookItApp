@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="24dp">
 
-    <!-- שדה שם משתמש -->
+    <!-- username section -->
     <EditText
         android:id="@+id/loginUsernameEditText"
         android:layout_width="0dp"
@@ -21,7 +21,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- שדה סיסמה -->
+    <!-- password section -->
     <EditText
         android:id="@+id/loginPasswordEditText"
         android:layout_width="0dp"
@@ -37,7 +37,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
 
-    <!-- כפתור התחברות -->
+    <!-- login button -->
     <Button
         android:id="@+id/loginButton"
         android:layout_width="0dp"

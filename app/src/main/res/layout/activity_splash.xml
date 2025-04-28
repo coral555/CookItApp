@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- רקע של תמונת המאכלים -->
+    <!-- splash background -->
     <ImageView
         android:id="@+id/backgroundImageView"
         android:layout_width="match_parent"
@@ -14,13 +14,13 @@
         android:src="@drawable/splash_background"
         android:contentDescription="Background Image" />
 
-    <!-- שכבה שקופה מעל התמונה -->
+    <!-- Transparent layer over the image -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/transparent">
 
-        <!-- לוגו האפליקציה -->
+        <!-- app logo -->
         <ImageView
             android:id="@+id/logoImageView"
             android:layout_width="350dp"
@@ -32,7 +32,7 @@
             android:layout_marginTop="120dp"
             android:contentDescription="App Logo" />
 
-        <!-- שמות המפתחים -->
+        <!-- developers -->
         <TextView
             android:id="@+id/developersTextView"
             android:layout_width="wrap_content"

@@ -15,9 +15,9 @@ public class LoginPagerAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         if (position == 0) {
-            return new LoginFragment(); // מסך התחברות
+            return new LoginFragment(); // login screen
         } else {
-            return new SignupFragment(); // מסך הרשמה
+            return new SignupFragment(); // Signup screen
         }
     }
 

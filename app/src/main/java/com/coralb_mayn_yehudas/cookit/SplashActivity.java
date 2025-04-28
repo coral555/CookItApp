@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private static final int SPLASH_DISPLAY_LENGTH = 3000; // 3 שניות
+    private static final int SPLASH_DISPLAY_LENGTH = 3000; // 3 seconds
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,7 +17,7 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(() -> {
             Intent mainIntent = new Intent(SplashActivity.this, LoginActivity.class);
             startActivity(mainIntent);
-            finish(); // חשוב כדי למנוע חזרה אחורה
+            finish(); // Important to prevent relapse (rollback)
         }, SPLASH_DISPLAY_LENGTH);
     }
 }

@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment;
 public class SignupFragment extends Fragment {
 
     public SignupFragment() {
-        // חובה קונסטרקטור ריק
+        // empty constructor
     }
 
     @Nullable
@@ -19,7 +19,7 @@ public class SignupFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        // מחזיר את התצוגה של טופס ההרשמה
+        // Returns the signup form view
         return inflater.inflate(R.layout.fragment_signup, container, false);
     }
 }
