@@ -1,5 +1,8 @@
 package com.coralb_mayn_yehudas.cookit;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,19 +38,28 @@ public class LoginFragment extends Fragment {
         db = new DataBaseHelper(requireContext());
 
         loginButton.setOnClickListener(v -> {
-            String username = usernameInput.getText().toString();
-            String password = passwordInput.getText().toString();
+            String username = usernameInput.getText().toString().trim();
+            String password = passwordInput.getText().toString().trim();
 
             if (username.isEmpty() || password.isEmpty()) {
-                Toast.makeText(getContext(), "Please enter all fields", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.login_error_empty), Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            boolean isValid = db.checkUser(username, password);
+            if (isValid) {
+                Toast.makeText(getContext(), getString(R.string.login_success), Toast.LENGTH_SHORT).show();
+
+                SharedPreferences prefs = requireContext().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+                boolean settingsDone = prefs.getBoolean("settings_done", false);
+
+                Intent intent = new Intent(requireContext(),
+                        settingsDone ? MainActivity.class : SettingsActivity.class);
+                startActivity(intent);
+                requireActivity().finish();
+
             } else {
-                boolean isValid = db.checkUser(username, password);
-                if (isValid) {
-                    Toast.makeText(getContext(), "Login successful", Toast.LENGTH_SHORT).show();
-                    // כאן אפשר להוסיף Intent ל־MainActivity
-                } else {
-                    Toast.makeText(getContext(), "Invalid username or password", Toast.LENGTH_SHORT).show();
-                }
+                Toast.makeText(getContext(), getString(R.string.login_error_invalid), Toast.LENGTH_SHORT).show();
             }
         });
 

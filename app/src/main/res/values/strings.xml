@@ -1,3 +1,39 @@
 <resources>
     <string name="app_name">Cook It</string>
+
+    <!-- Language options -->
+    <string-array name="languages">
+        <item>Hebrew</item>
+        <item>English</item>
+    </string-array>
+
+    <string name="settings_choose_theme">Choose Display Mode</string>
+    <string name="settings_dark_mode">Dark Mode</string>
+    <string name="settings_choose_language">Choose Language</string>
+    <string name="settings_finish">Finish and Continue</string>
+
+
+    <!-- Login -->
+    <string name="login_tab">Log In</string>
+    <string name="login_username">Username</string>
+    <string name="login_password">Password</string>
+    <string name="login_button">Log In</string>
+    <string name="login_error_empty">Please enter all fields</string>
+    <string name="login_error_invalid">Invalid username or password</string>
+    <string name="login_success">Login successful</string>
+
+    <!-- Signup -->
+    <string name="signup_tab">Sign Up</string>
+    <string name="signup_first_name">First Name</string>
+    <string name="signup_last_name">Last Name</string>
+    <string name="signup_username">Username</string>
+    <string name="signup_email">Email</string>
+    <string name="signup_password">Password</string>
+    <string name="signup_button">Sign Up</string>
+    <string name="signup_success">Registration successful</string>
+    <string name="signup_error_exists">Username already exists</string>
+    <string name="signup_error_empty">Please fill all fields</string>
+    <string name="signup_error_first_name">First name must be at least 2 letters and only in English</string>
+    <string name="signup_error_last_name">Last name must be at least 2 letters and only in English</string>
+    <string name="signup_error_email">Please enter a valid email address</string>
 </resources>

@@ -28,7 +28,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Username"
+            android:hint="@string/login_username"
             android:backgroundTint="#888888"
             android:inputType="textPersonName"
             android:padding="12dp"
@@ -59,12 +59,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Password"
+            android:hint="@string/login_password"
             android:backgroundTint="#888888"
             android:inputType="textPassword"
             android:padding="12dp"
             android:textColor="#000000"
-            android:textColorHint="#AAAAAA" />
+            android:textColorHint="#AAAAAA"
+            android:textDirection="rtl"
+            android:gravity="end"/>
     </LinearLayout>
 
     <!-- login button -->
@@ -72,7 +74,7 @@
         android:id="@+id/loginButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Log in"
+        android:text="@string/login_button"
         android:textColor="#FFFFFF"
         android:backgroundTint="#4CAF50"
         android:padding="12dp"

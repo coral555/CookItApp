@@ -14,6 +14,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LocaleHelper.applySavedLocale(this); // 🟢 חשוב: החלת שפה לפני הטעינה
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -25,11 +26,10 @@ public class LoginActivity extends AppCompatActivity {
 
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
             if (position == 0) {
-                tab.setText("Log In");
+                tab.setText(getString(R.string.login_tab));  // 🟢 נמשך מהstrings.xml
             } else {
-                tab.setText("Sign Up");
+                tab.setText(getString(R.string.signup_tab)); // 🟢 תרגום אוטומטי
             }
         }).attach();
     }
 }
-
