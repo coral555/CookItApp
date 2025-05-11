@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">בשל את זה</string>
+
+    <!-- Language options -->
+    <string-array name="languages">
+        <item>עברית</item>
+        <item>אנגלית</item>
+    </string-array>
+
+    <string name="settings_choose_theme">בחר מצב תצוגה</string>
+    <string name="settings_dark_mode">מצב כהה</string>
+    <string name="settings_choose_language">בחר שפה</string>
+    <string name="settings_finish">סיים והמשך</string>
+
+    <!-- Login -->
+    <string name="login_tab">התחברות</string>
+    <string name="login_username">שם משתמש</string>
+    <string name="login_password">סיסמה</string>
+    <string name="login_button">התחבר</string>
+    <string name="login_error_empty">נא למלא את כל השדות</string>
+    <string name="login_error_invalid">שם משתמש או סיסמה שגויים</string>
+    <string name="login_success">ההתחברות הצליחה</string>
+
+    <!-- Signup -->
+    <string name="signup_tab">הרשמה</string>
+    <string name="signup_first_name">שם פרטי</string>
+    <string name="signup_last_name">שם משפחה</string>
+    <string name="signup_username">שם משתמש</string>
+    <string name="signup_email">דוא״ל</string>
+    <string name="signup_password">סיסמה</string>
+    <string name="signup_button">הרשם</string>
+    <string name="signup_success">ההרשמה הושלמה בהצלחה</string>
+    <string name="signup_error_exists">שם המשתמש כבר קיים</string>
+    <string name="signup_error_empty">נא למלא את כל השדות</string>
+    <string name="signup_error_first_name">השם הפרטי חייב להכיל לפחות 2 אותיות באנגלית בלבד</string>
+    <string name="signup_error_last_name">שם המשפחה חייב להכיל לפחות 2 אותיות באנגלית בלבד</string>
+    <string name="signup_error_email">נא להזין כתובת דוא״ל תקינה</string>
+</resources>
