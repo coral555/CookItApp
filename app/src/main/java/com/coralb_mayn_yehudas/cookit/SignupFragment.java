@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment;
 public class SignupFragment extends Fragment {
 
     public SignupFragment() {
-        // empty constructor
+        // empty constructor.
     }
 
     @Nullable
