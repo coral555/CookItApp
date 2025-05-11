@@ -6,84 +6,159 @@
     android:layout_height="match_parent"
     android:padding="24dp">
 
-    <!-- first name section -->
-    <EditText
-        android:id="@+id/signupFirstNameEditText"
+    <!-- first name row -->
+    <LinearLayout
+        android:id="@+id/firstNameRow"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="First Name"
-        android:backgroundTint="#888888"
-        android:inputType="textPersonName"
-        android:padding="12dp"
-        android:textColor="#000000"
-        android:textColorHint="#AAAAAA"
+        android:orientation="horizontal"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- last name section -->
-    <EditText
-        android:id="@+id/signupLastNameEditText"
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/icon_user" />
+
+        <EditText
+            android:id="@+id/signupFirstNameEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="First Name"
+            android:backgroundTint="#888888"
+            android:inputType="textPersonName"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:textColorHint="#AAAAAA" />
+    </LinearLayout>
+
+    <!-- last name row -->
+    <LinearLayout
+        android:id="@+id/lastNameRow"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Last Name"
-        android:backgroundTint="#888888"
-        android:inputType="textPersonName"
-        android:padding="12dp"
-        android:textColor="#000000"
-        android:textColorHint="#AAAAAA"
-        app:layout_constraintTop_toBottomOf="@id/signupFirstNameEditText"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@id/firstNameRow"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="12dp"/>
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- username section -->
-    <EditText
-        android:id="@+id/signupUsernameEditText"
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/icon_user" />
+
+        <EditText
+            android:id="@+id/signupLastNameEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Last Name"
+            android:backgroundTint="#888888"
+            android:inputType="textPersonName"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:textColorHint="#AAAAAA" />
+    </LinearLayout>
+
+    <!-- username row -->
+    <LinearLayout
+        android:id="@+id/usernameRow"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Username"
-        android:backgroundTint="#888888"
-        android:inputType="textPersonName"
-        android:padding="12dp"
-        android:textColor="#000000"
-        android:textColorHint="#AAAAAA"
-        app:layout_constraintTop_toBottomOf="@id/signupLastNameEditText"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@id/lastNameRow"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="12dp"/>
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- mail section -->
-    <EditText
-        android:id="@+id/signupEmailEditText"
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/icon_username" />
+
+        <EditText
+            android:id="@+id/signupUsernameEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Username"
+            android:backgroundTint="#888888"
+            android:inputType="textPersonName"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:textColorHint="#AAAAAA" />
+    </LinearLayout>
+
+    <!-- email row -->
+    <LinearLayout
+        android:id="@+id/emailRow"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Email"
-        android:backgroundTint="#888888"
-        android:inputType="textEmailAddress"
-        android:padding="12dp"
-        android:textColor="#000000"
-        android:textColorHint="#AAAAAA"
-        app:layout_constraintTop_toBottomOf="@id/signupUsernameEditText"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@id/usernameRow"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="12dp"/>
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- password section -->
-    <EditText
-        android:id="@+id/signupPasswordEditText"
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/icon_mail" />
+
+        <EditText
+            android:id="@+id/signupEmailEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Email"
+            android:backgroundTint="#888888"
+            android:inputType="textEmailAddress"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:textColorHint="#AAAAAA" />
+    </LinearLayout>
+
+    <!-- password row -->
+    <LinearLayout
+        android:id="@+id/passwordRow"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Password"
-        android:backgroundTint="#888888"
-        android:inputType="textPassword"
-        android:padding="12dp"
-        android:textColor="#000000"
-        android:textColorHint="#AAAAAA"
-        app:layout_constraintTop_toBottomOf="@id/signupEmailEditText"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@id/emailRow"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="12dp"/>
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/icon_password" />
+
+        <EditText
+            android:id="@+id/signupPasswordEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Password"
+            android:backgroundTint="#888888"
+            android:inputType="textPassword"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:textColorHint="#AAAAAA" />
+    </LinearLayout>
 
     <!-- signup button -->
     <Button
@@ -94,10 +169,10 @@
         android:textColor="#FFFFFF"
         android:backgroundTint="#4CAF50"
         android:padding="12dp"
-        app:layout_constraintTop_toBottomOf="@id/signupPasswordEditText"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/passwordRow"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="24dp"
         app:cornerRadius="30dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
