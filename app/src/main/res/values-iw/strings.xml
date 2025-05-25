@@ -8,6 +8,7 @@
         <item>אנגלית</item>
     </string-array>
 
+    <!-- Settings -->
     <string name="settings_choose_theme">בחר מצב תצוגה</string>
     <string name="settings_dark_mode">מצב כהה</string>
     <string name="settings_choose_language">בחר שפה</string>
@@ -36,4 +37,39 @@
     <string name="signup_error_first_name">השם הפרטי חייב להכיל לפחות 2 אותיות באנגלית בלבד</string>
     <string name="signup_error_last_name">שם המשפחה חייב להכיל לפחות 2 אותיות באנגלית בלבד</string>
     <string name="signup_error_email">נא להזין כתובת דוא״ל תקינה</string>
+
+    <!-- Main Menu -->
+    <string name="add_new_recipe">הוסף מתכון חדש</string>
+    <string name="search">חפש</string>
+    <string name="about">אודות</string>
+    <string name="settings">הגדרות</string>
+    <string name="exit">יציאה</string>
+
+    <!-- Add Recipe Dialog -->
+    <string name="dialog_add_recipe">הוספת מתכון</string>
+    <string name="recipe_name">שם המתכון</string>
+    <string name="recipe_ingredients">מרכיבים</string>
+    <string name="recipe_steps">שלבי הכנה</string>
+    <string name="recipe_time">זמן הכנה (בדקות)</string>
+    <string name="pick_image">בחר תמונה</string>
+    <string name="dialog_save">שמור</string>
+    <string name="dialog_cancel">ביטול</string>
+    <string name="dialog_fill_fields">נא למלא את כל השדות</string>
+    <string name="dialog_recipe_saved">המתכון נשמר בהצלחה</string>
+    <string name="select_category">בחר קטגוריה</string>
+
+    <!-- Add Category Dialog -->
+    <string name="add_category_title">הוספת קטגוריה</string>
+    <string name="enter_category_name">הכנס שם קטגוריה</string>
+    <string name="add">הוסף</string>
+    <string name="cancel">ביטול</string>
+    <string name="category_exists">הקטגוריה כבר קיימת</string>
+    <string name="category_added_success">הקטגוריה נוספה בהצלחה</string>
+    <string name="empty_category">שם הקטגוריה לא יכול להיות ריק</string>
+    <string name="add_category_option">➕ הוסף קטגוריה</string>
+
+    <!-- Dialog Option -->
+    <string name="dialog_choose_action">בחר פעולה</string>
+    <string name="create_recipe">צור מתכון חדש</string>
+    <string name="create_category">צור קטגוריה חדשה</string>
 </resources>
