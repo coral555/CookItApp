@@ -15,6 +15,12 @@ public class LocaleHelper {
         setLocale(context, lang);
     }
 
+    public static String getLanguage(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+        return prefs.getString("language", "en");
+    }
+
+
     public static void setLocale(Context context, String languageCode) {
         Locale locale = new Locale(languageCode);
         Locale.setDefault(locale);

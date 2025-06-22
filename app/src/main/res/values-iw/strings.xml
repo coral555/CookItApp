@@ -47,16 +47,18 @@
 
     <!-- Add Recipe Dialog -->
     <string name="dialog_add_recipe">הוספת מתכון</string>
+    <string name="dialog_edit_recipe">עריכת מתכון</string>
     <string name="recipe_name">שם המתכון</string>
     <string name="recipe_ingredients">מרכיבים</string>
     <string name="recipe_steps">שלבי הכנה</string>
     <string name="recipe_time">זמן הכנה (בדקות)</string>
-    <string name="pick_image">בחר תמונה</string>
+    <string name="pick_image">הוסף תמונה</string>
     <string name="dialog_save">שמור</string>
     <string name="dialog_cancel">ביטול</string>
     <string name="dialog_fill_fields">נא למלא את כל השדות</string>
     <string name="dialog_recipe_saved">המתכון נשמר בהצלחה</string>
     <string name="select_category">בחר קטגוריה</string>
+    <string name="delete_image">מחק תמונה</string>
 
     <!-- Add Category Dialog -->
     <string name="add_category_title">הוספת קטגוריה</string>
@@ -72,4 +74,25 @@
     <string name="dialog_choose_action">בחר פעולה</string>
     <string name="create_recipe">צור מתכון חדש</string>
     <string name="create_category">צור קטגוריה חדשה</string>
+
+    <!-- RecyclerView item actions -->
+    <string name="view">צפה</string>
+    <string name="edit">ערוך</string>
+    <string name="delete">מחק</string>
+    <string name="favorite">מועדף</string>
+    <string name="recipe_image">תמונת מתכון</string>
+
+    <!-- Additional labels -->
+    <string name="category">קטגוריה</string>
+    <string name="time">זמן הכנה</string>
+    <string name="ingredients">מרכיבים</string>
+    <string name="steps">שלבי הכנה</string>
+    <string name="deleted">נמחק</string>
+
+    <string name="about_os_version">גרסת מערכת</string>
+    <string name="about_submitted_by">הוגש על ידי</string>
+    <string name="about_submission_date">תאריך הגשה</string>
+    <string name="about_package_label">חבילה</string>
+    <string name="about_names">קורל בהופרקר, מאי ניגרי ויהודה שמולביץ</string>
+
 </resources>

@@ -47,16 +47,18 @@
 
     <!-- Add Recipe Dialog -->
     <string name="dialog_add_recipe">Add Recipe</string>
+    <string name="dialog_edit_recipe">Edit Recipe</string>
     <string name="recipe_name">Recipe Name</string>
     <string name="recipe_ingredients">Ingredients</string>
     <string name="recipe_steps">Preparation Steps</string>
     <string name="recipe_time">Preparation Time (minutes)</string>
-    <string name="pick_image">Pick Image</string>
+    <string name="pick_image">Add Image</string>
     <string name="dialog_save">Save</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_fill_fields">Please fill all fields</string>
     <string name="dialog_recipe_saved">Recipe saved successfully</string>
     <string name="select_category">Select Category</string>
+    <string name="delete_image">Delete Image</string>
 
     <!-- Add Category Dialog -->
     <string name="add_category_title">Add Category</string>
@@ -72,4 +74,25 @@
     <string name="dialog_choose_action">Choose an action</string>
     <string name="create_recipe">Create New Recipe</string>
     <string name="create_category">Create New Category</string>
+
+    <!-- RecyclerView item actions -->
+    <string name="view">View</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="favorite">Favorite</string>
+    <string name="recipe_image">Recipe Image</string>
+
+    <!-- Additional labels -->
+    <string name="category">Category</string>
+    <string name="time">Preparation Time</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="steps">Steps</string>
+    <string name="deleted">Deleted</string>
+
+    <string name="about_os_version">OS Version</string>
+    <string name="about_submitted_by">Submitted by</string>
+    <string name="about_submission_date">Submission Date</string>
+    <string name="about_package_label">Package</string>
+    <string name="about_names">Coral Bahofrker, May Nigri and Yehuda Shmulevitz</string>
+
 </resources>
