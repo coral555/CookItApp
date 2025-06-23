@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">בשל את זה</string>
+    <string name="app_name">בשל את זה (CookIt)</string>
 
     <!-- Language options -->
     <string-array name="languages">
@@ -25,8 +25,6 @@
 
     <!-- Signup -->
     <string name="signup_tab">הרשמה</string>
-    <string name="signup_first_name">שם פרטי</string>
-    <string name="signup_last_name">שם משפחה</string>
     <string name="signup_username">שם משתמש</string>
     <string name="signup_email">דוא״ל</string>
     <string name="signup_password">סיסמה</string>
@@ -40,7 +38,7 @@
 
     <!-- Main Menu -->
     <string name="add_new_recipe">הוסף מתכון חדש</string>
-    <string name="search">חפש</string>
+    <string name="search">חיפוש</string>
     <string name="about">אודות</string>
     <string name="settings">הגדרות</string>
     <string name="exit">יציאה</string>
@@ -94,5 +92,21 @@
     <string name="about_submission_date">תאריך הגשה</string>
     <string name="about_package_label">חבילה</string>
     <string name="about_names">קורל בהופרקר, מאי ניגרי ויהודה שמולביץ</string>
+
+    <string name="delete_all_recipes">מחק את כל המתכונים</string>
+    <string name="delete_all_confirmation">האם אתה בטוח שברצונך למחוק את כל המתכונים שלך?</string>
+    <string name="delete_all_final_warning">מחיקה זו לא ניתנת לשחזור. להמשיך?</string>
+    <string name="deleted_all_recipes">כל המתכונים נמחקו בהצלחה</string>
+
+    <string name="duplicate_recipe_error">מתכון בשם זה כבר קיים בקטגוריה שנבחרה</string>
+
+    <string name="filter_title">בחר סוג סינון</string>
+    <string name="filter_name_asc">שם ↑</string>
+    <string name="filter_name_desc">שם ↓</string>
+    <string name="filter_category_asc">קטגוריה ↑</string>
+    <string name="filter_category_desc">קטגוריה ↓</string>
+    <string name="filter_time_asc">זמן הכנה ↑</string>
+    <string name="filter_time_desc">זמן הכנה ↓</string>
+    <string name="filter">סינון</string>
 
 </resources>

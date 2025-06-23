@@ -16,6 +16,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
+import java.util.Comparator;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -40,7 +41,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CAMERA_PERMISSION = 1001;
-
+    private int userId;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private ImageView menuIcon;
@@ -75,9 +76,20 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        userId = getSharedPreferences("MyPrefs", MODE_PRIVATE).getInt("user_id", -1); // שליפה מההעדפות
+
+        if (userId == -1) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+            return;
+        }
         LocaleHelper.applySavedLocale(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        db = new DataBaseHelper(this);
 
         drawerLayout        = findViewById(R.id.drawerLayout);
         navigationView      = findViewById(R.id.navigationView);
@@ -92,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         menuIcon.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
         navigationView.setNavigationItemSelectedListener(this::onNavItem);
 
-        recipes = db.getAllRecipes();
+        recipes = db.getAllRecipes(userId);
         adapter = new RecipeAdapter(this, recipes, new RecipeAdapter.Listener() {
             @Override
             public void onView(Recipe r) {
@@ -134,7 +146,64 @@ public class MainActivity extends AppCompatActivity {
         recipesRecyclerView.setAdapter(adapter);
 
         addRecipeButton.setOnClickListener(v -> showAddOptionsDialog());
+
+        LinearLayout filterButton = findViewById(R.id.filterButton);
+        filterButton.setOnClickListener(v -> showFilterDialog());
+
     }
+
+    private void showFilterDialog() {
+        String[] options = {
+                getString(R.string.filter_name_asc),
+                getString(R.string.filter_name_desc),
+                getString(R.string.filter_category_asc),
+                getString(R.string.filter_category_desc),
+                getString(R.string.filter_time_asc),
+                getString(R.string.filter_time_desc)
+        };
+
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.filter_title))
+                .setItems(options, (dialog, which) -> {
+                    switch (which) {
+                        case 0: // שם ↑
+                            recipes.sort(Comparator.comparing(Recipe::getName));
+                            break;
+                        case 1: // שם ↓
+                            recipes.sort((a, b) -> b.getName().compareTo(a.getName()));
+                            break;
+                        case 2: // קטגוריה ↑
+                            recipes.sort(Comparator.comparing(Recipe::getCategory));
+                            break;
+                        case 3: // קטגוריה ↓
+                            recipes.sort((a, b) -> b.getCategory().compareTo(a.getCategory()));
+                            break;
+                        case 4: // זמן ↑
+                            recipes.sort(Comparator.comparingInt(r -> {
+                                try {
+                                    return Integer.parseInt(r.getTime());
+                                } catch (NumberFormatException e) {
+                                    return Integer.MAX_VALUE;
+                                }
+                            }));
+                            break;
+                        case 5: // זמן ↓
+                            recipes.sort((a, b) -> {
+                                try {
+                                    return Integer.parseInt(b.getTime()) - Integer.parseInt(a.getTime());
+                                } catch (NumberFormatException e) {
+                                    return 0;
+                                }
+                            });
+                            break;
+                    }
+                    adapter.notifyDataSetChanged();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+
 
     private boolean onNavItem(@NonNull MenuItem item) {
         int id = item.getItemId();
@@ -142,8 +211,36 @@ public class MainActivity extends AppCompatActivity {
             showAboutDialog();
         } else if (id == R.id.nav_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
+        } else if (id == R.id.nav_delete_all) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.delete_all_recipes)
+                    .setMessage(R.string.delete_all_confirmation)
+                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                        new AlertDialog.Builder(this)
+                                .setTitle(R.string.delete_all_recipes)
+                                .setMessage(R.string.delete_all_final_warning)
+                                .setPositiveButton(android.R.string.ok, (dialog2, which2) -> {
+                                    db.deleteAllRecipes(userId);
+                                    recipes.clear();
+                                    adapter.notifyDataSetChanged();
+                                    Toast.makeText(this, R.string.deleted_all_recipes, Toast.LENGTH_SHORT).show();
+                                })
+                                .setNegativeButton(android.R.string.cancel, null)
+                                .show();
+                    })
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show();
         } else if (id == R.id.nav_exit) {
-            finishAffinity();
+            getSharedPreferences("MyPrefs", MODE_PRIVATE)
+                    .edit()
+                    .remove("user_id")
+                    .apply();
+
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+            return true;
         } else {
             return false;
         }
@@ -169,9 +266,6 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
 
-
-
-
     private void showAddOptionsDialog() {
         String[] options = {
                 getString(R.string.dialog_add_recipe),
@@ -191,8 +285,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showAddRecipeDialog(@Nullable Recipe existing) {
-        View dialogView = LayoutInflater.from(this)
-                .inflate(R.layout.dialog_add_recipe, null);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_recipe, null);
 
         EditText nameInput        = dialogView.findViewById(R.id.recipeName);
         Spinner categorySpinner   = dialogView.findViewById(R.id.recipeCategory);
@@ -202,21 +295,12 @@ public class MainActivity extends AppCompatActivity {
         ImageView imagePreview    = dialogView.findViewById(R.id.recipeImage);
         Button pickImageButton    = dialogView.findViewById(R.id.pickImageButton);
 
-        // ניצור כפתור מחיקה דינמי
-        Button deleteImageButton = new Button(this);
-        deleteImageButton.setText(getString(R.string.delete_image));
-        deleteImageButton.setVisibility(View.GONE); // מוסתר בהתחלה
-
-        // מוסיפים אותו לדינמיקה אחרי pickImageButton
-        LinearLayout layout = (LinearLayout) dialogView.findViewById(R.id.recipeDialogLayout);
-        layout.addView(deleteImageButton);
-
+        Button deleteImageButton = dialogView.findViewById(R.id.deleteImageButton);
         currentImagePreview = imagePreview;
 
-        ArrayList<String> cats = db.getAllCategories();
+        ArrayList<String> cats = db.getAllCategories(userId);
         cats.add(getString(R.string.add_category_option));
-        ArrayAdapter<String> catAdapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_item, cats);
+        ArrayAdapter<String> catAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, cats);
         catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categorySpinner.setAdapter(catAdapter);
 
@@ -255,7 +339,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // לחיצה על מחיקת תמונה
         deleteImageButton.setOnClickListener(v -> {
             selectedImageUri = null;
             imagePreview.setImageDrawable(null);
@@ -267,40 +350,67 @@ public class MainActivity extends AppCompatActivity {
                 ? getString(R.string.dialog_add_recipe)
                 : getString(R.string.dialog_edit_recipe);
 
-        new AlertDialog.Builder(this)
+        AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(title)
                 .setView(dialogView)
-                .setPositiveButton(R.string.dialog_save, (dialog, which) -> {
-                    String name  = nameInput.getText().toString().trim();
-                    String cat   = categorySpinner.getSelectedItem().toString();
-                    String ingr  = ingredientsInput.getText().toString().trim();
-                    String steps = stepsInput.getText().toString().trim();
-                    String time  = timeInput.getText().toString().trim();
-                    String uri   = selectedImageUri != null ? selectedImageUri.toString() : null;
+                .setPositiveButton(R.string.dialog_save, null) // נטפל בלחיצה ידנית
+                .setNegativeButton(android.R.string.cancel, null)
+                .create();
 
-                    if (name.isEmpty() || cat.isEmpty()) {
-                        Toast.makeText(this, R.string.dialog_fill_fields, Toast.LENGTH_SHORT).show();
+        dialog.setOnShowListener(d -> {
+            Button saveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            saveButton.setOnClickListener(v -> {
+                String name  = nameInput.getText().toString().trim();
+                String cat   = categorySpinner.getSelectedItem().toString();
+                String ingr  = ingredientsInput.getText().toString().trim();
+                String steps = stepsInput.getText().toString().trim();
+                String time  = timeInput.getText().toString().trim();
+                String uri   = selectedImageUri != null ? selectedImageUri.toString() : null;
+
+                if (name.isEmpty() || cat.isEmpty()) {
+                    Toast.makeText(this, R.string.dialog_fill_fields, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (existing == null && db.recipeExists(name, cat, userId)) {
+                    Toast.makeText(this, getString(R.string.duplicate_recipe_error), Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                if (existing == null) {
+                    // בדיקה למניעת כפילות בהוספה
+                    if (db.recipeExists(name, cat, userId)) {
+                        Toast.makeText(this, R.string.duplicate_recipe_error, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    db.insertRecipe(name, cat, ingr, steps, time, uri, userId);
+                } else {
+                    // בדיקה רק אם המשתמש שינה את השם או הקטגוריה
+                    boolean nameChanged = !existing.getName().equals(name);
+                    boolean categoryChanged = !existing.getCategory().equals(cat);
+                    if ((nameChanged || categoryChanged) && db.recipeExists(name, cat, userId)) {
+                        Toast.makeText(this, R.string.duplicate_recipe_error, Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    if (existing == null) {
-                        db.insertRecipe(name, cat, ingr, steps, time, uri);
-                    } else {
-                        existing.setName(name);
-                        existing.setCategory(cat);
-                        existing.setIngredients(ingr);
-                        existing.setSteps(steps);
-                        existing.setTime(time);
-                        existing.setImageUri(uri);
-                        db.updateRecipe(existing);
-                    }
+                    existing.setName(name);
+                    existing.setCategory(cat);
+                    existing.setIngredients(ingr);
+                    existing.setSteps(steps);
+                    existing.setTime(time);
+                    existing.setImageUri(uri);
+                    db.updateRecipe(existing);
+                }
 
-                    recipes.clear();
-                    recipes.addAll(db.getAllRecipes());
-                    adapter.notifyDataSetChanged();
-                })
-                .setNegativeButton(android.R.string.cancel, null)
-                .show();
+
+                recipes.clear();
+                recipes.addAll(db.getAllRecipes(userId));
+                adapter.notifyDataSetChanged();
+                dialog.dismiss();
+            });
+        });
+
+        dialog.show();
     }
 
     private void showAddCategoryDialog(@Nullable Spinner spinner, @Nullable ArrayAdapter<String> adapter, @Nullable ArrayList<String> cats) {
@@ -319,12 +429,12 @@ public class MainActivity extends AppCompatActivity {
 
                     new Thread(() -> {
                         AtomicBoolean inserted = new AtomicBoolean(false);
-                        if (!db.categoryExists(name)) {
-                            db.insertCategory(name);
+                        if (!db.categoryExists(name, userId)) {
+                            db.insertCategory(name, userId);
                             inserted.set(true);
                         }
 
-                        ArrayList<String> updatedCats = db.getAllCategories();
+                        ArrayList<String> updatedCats = db.getAllCategories(userId);
                         updatedCats.add(getString(R.string.add_category_option));
 
                         runOnUiThread(() -> {

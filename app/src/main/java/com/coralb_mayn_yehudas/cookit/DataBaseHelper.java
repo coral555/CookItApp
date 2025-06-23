@@ -12,23 +12,22 @@ import java.util.List;
 public class DataBaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME    = "CookIt.db";
-    private static final int    DATABASE_VERSION = 3;  // bump when schema changes
+    private static final int    DATABASE_VERSION = 4;
 
-    // --- table: users ---
+    // --- users table ---
     private static final String TABLE_USERS      = "users";
     private static final String COL_ID           = "id";
-    private static final String COL_FIRST_NAME   = "first_name";
-    private static final String COL_LAST_NAME    = "last_name";
     private static final String COL_USERNAME     = "username";
     private static final String COL_EMAIL        = "email";
     private static final String COL_PASSWORD     = "password";
 
-    // --- table: categories ---
+    // --- categories table ---
     private static final String TABLE_CATEGORIES = "categories";
     private static final String COL_CAT_ID       = "id";
     private static final String COL_CAT_NAME     = "name";
+    private static final String COL_CAT_USER_ID  = "user_id";
 
-    // --- table: recipes ---
+    // --- recipes table ---
     private static final String TABLE_RECIPES     = "recipes";
     private static final String COL_RECIPE_ID     = "id";
     private static final String COL_RECIPE_NAME   = "name";
@@ -38,6 +37,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String COL_RECIPE_TIME        = "time";
     private static final String COL_RECIPE_IMAGE       = "imageUri";
     private static final String COL_RECIPE_FAVORITE    = "favorite";  // 0 or 1
+    private static final String COL_RECIPE_USER_ID     = "user_id";
 
     public DataBaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -49,8 +49,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.execSQL(
                 "CREATE TABLE " + TABLE_USERS + " (" +
                         COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        COL_FIRST_NAME + " TEXT, " +
-                        COL_LAST_NAME  + " TEXT, " +
                         COL_USERNAME   + " TEXT UNIQUE, " +
                         COL_EMAIL      + " TEXT, " +
                         COL_PASSWORD   + " TEXT" +
@@ -60,12 +58,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         // categories
         db.execSQL(
                 "CREATE TABLE " + TABLE_CATEGORIES + " (" +
-                        COL_CAT_ID   + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        COL_CAT_NAME + " TEXT UNIQUE" +
+                        COL_CAT_ID       + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        COL_CAT_NAME     + " TEXT, " +
+                        COL_CAT_USER_ID  + " INTEGER" +
                         ")"
         );
 
-        // recipes (with favorite flag)
+        // recipes
         db.execSQL(
                 "CREATE TABLE " + TABLE_RECIPES + " (" +
                         COL_RECIPE_ID         + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -75,14 +74,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         COL_RECIPE_STEPS      + " TEXT, " +
                         COL_RECIPE_TIME       + " TEXT, " +
                         COL_RECIPE_IMAGE      + " TEXT, " +
-                        COL_RECIPE_FAVORITE   + " INTEGER DEFAULT 0" +
+                        COL_RECIPE_FAVORITE   + " INTEGER DEFAULT 0, " +
+                        COL_RECIPE_USER_ID    + " INTEGER" +
                         ")"
         );
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // simple drop & recreate (data will be lost on upgrade)
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORIES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECIPES);
@@ -91,14 +90,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     // ---------- users ----------
 
-    public boolean insertUser(String firstName, String lastName, String username, String email, String password) {
+    public boolean insertUser(String username, String email, String password) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put(COL_FIRST_NAME, firstName);
-        cv.put(COL_LAST_NAME,  lastName);
-        cv.put(COL_USERNAME,   username);
-        cv.put(COL_EMAIL,      email);
-        cv.put(COL_PASSWORD,   password);
+        cv.put(COL_USERNAME, username);
+        cv.put(COL_EMAIL,    email);
+        cv.put(COL_PASSWORD, password);
         long id = db.insert(TABLE_USERS, null, cv);
         return id != -1;
     }
@@ -110,38 +107,53 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         COL_USERNAME + "=? AND " + COL_PASSWORD + "=?",
                 new String[]{ username, password }
         );
-        boolean exists = (c.getCount() > 0);
+        boolean exists = c.moveToFirst();
         c.close();
         return exists;
+    }
+
+    public int getUserId(String username) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.rawQuery(
+                "SELECT id FROM " + TABLE_USERS + " WHERE username=?",
+                new String[]{ username }
+        );
+        int id = -1;
+        if (c.moveToFirst()) {
+            id = c.getInt(0);
+        }
+        c.close();
+        return id;
     }
 
     // ---------- categories ----------
 
-    public boolean insertCategory(String name) {
+    public boolean insertCategory(String name, int userId) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COL_CAT_NAME, name);
+        cv.put(COL_CAT_USER_ID, userId);
         long id = db.insert(TABLE_CATEGORIES, null, cv);
         return id != -1;
     }
 
-    public boolean categoryExists(String name) {
+    public boolean categoryExists(String name, int userId) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.rawQuery(
-                "SELECT 1 FROM " + TABLE_CATEGORIES + " WHERE " + COL_CAT_NAME + "=?",
-                new String[]{ name }
+                "SELECT 1 FROM " + TABLE_CATEGORIES + " WHERE name=? AND user_id=?",
+                new String[]{ name, String.valueOf(userId) }
         );
-        boolean exists = (c.getCount() > 0);
+        boolean exists = c.moveToFirst();
         c.close();
         return exists;
     }
 
-    public ArrayList<String> getAllCategories() {
+    public ArrayList<String> getAllCategories(int userId) {
         ArrayList<String> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.rawQuery(
-                "SELECT " + COL_CAT_NAME + " FROM " + TABLE_CATEGORIES,
-                null
+                "SELECT name FROM " + TABLE_CATEGORIES + " WHERE user_id=?",
+                new String[]{ String.valueOf(userId) }
         );
         while (c.moveToNext()) {
             list.add(c.getString(0));
@@ -152,7 +164,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     // ---------- recipes ----------
 
-    public boolean insertRecipe(String name, String category, String ingredients, String steps, String time, String imageUri) {
+    public boolean insertRecipe(String name, String category, String ingredients, String steps, String time, String imageUri, int userId) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COL_RECIPE_NAME,        name);
@@ -161,13 +173,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cv.put(COL_RECIPE_STEPS,       steps);
         cv.put(COL_RECIPE_TIME,        time);
         cv.put(COL_RECIPE_IMAGE,       imageUri);
-        // favorite defaults to 0
+        cv.put(COL_RECIPE_USER_ID,     userId);
         long id = db.insert(TABLE_RECIPES, null, cv);
         return id != -1;
     }
 
-    /** Fetch all recipes from the database */
-    public List<Recipe> getAllRecipes() {
+    public List<Recipe> getAllRecipes(int userId) {
         List<Recipe> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.rawQuery(
@@ -180,8 +191,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         COL_RECIPE_TIME + ", " +
                         COL_RECIPE_IMAGE + ", " +
                         COL_RECIPE_FAVORITE +
-                        " FROM " + TABLE_RECIPES,
-                null
+                        " FROM " + TABLE_RECIPES +
+                        " WHERE user_id=?",
+                new String[]{ String.valueOf(userId) }
         );
         while (c.moveToNext()) {
             Recipe r = new Recipe(
@@ -200,7 +212,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return list;
     }
 
-    /** Update an existing recipe */
     public boolean updateRecipe(Recipe r) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -220,7 +231,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return rows > 0;
     }
 
-    /** Delete a recipe by its ID */
     public boolean deleteRecipe(int recipeId) {
         SQLiteDatabase db = getWritableDatabase();
         int rows = db.delete(
@@ -229,5 +239,22 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 new String[]{ String.valueOf(recipeId) }
         );
         return rows > 0;
+    }
+
+    public void deleteAllRecipes(int userId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_RECIPES, "user_id=?", new String[]{ String.valueOf(userId) });
+        db.close();
+    }
+
+    public boolean recipeExists(String name, String category, int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT id FROM recipes WHERE name=? AND category=? AND user_id=?",
+                new String[]{ name, category, String.valueOf(userId) }
+        );
+        boolean exists = cursor.moveToFirst();
+        cursor.close();
+        return exists;
     }
 }

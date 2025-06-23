@@ -25,8 +25,6 @@
 
     <!-- Signup -->
     <string name="signup_tab">Sign Up</string>
-    <string name="signup_first_name">First Name</string>
-    <string name="signup_last_name">Last Name</string>
     <string name="signup_username">Username</string>
     <string name="signup_email">Email</string>
     <string name="signup_password">Password</string>
@@ -94,5 +92,21 @@
     <string name="about_submission_date">Submission Date</string>
     <string name="about_package_label">Package</string>
     <string name="about_names">Coral Bahofrker, May Nigri and Yehuda Shmulevitz</string>
+
+    <string name="delete_all_recipes">Delete All Recipes</string>
+    <string name="delete_all_confirmation">Are you sure you want to delete all your recipes?</string>
+    <string name="delete_all_final_warning">This action cannot be undone. Proceed?</string>
+    <string name="deleted_all_recipes">All recipes were successfully deleted</string>
+
+    <string name="duplicate_recipe_error">A recipe with this name already exists in the selected category</string>
+
+    <string name="filter_title">Choose filter type</string>
+    <string name="filter_name_asc">Name ↑</string>
+    <string name="filter_name_desc">Name ↓</string>
+    <string name="filter_category_asc">Category ↑</string>
+    <string name="filter_category_desc">Category ↓</string>
+    <string name="filter_time_asc">Preparation Time ↑</string>
+    <string name="filter_time_desc">Preparation Time ↓</string>
+    <string name="filter">Filter</string>
 
 </resources>

@@ -50,6 +50,14 @@ public class LoginFragment extends Fragment {
             if (isValid) {
                 Toast.makeText(getContext(), getString(R.string.login_success), Toast.LENGTH_SHORT).show();
 
+                // 🟢 שליפת מזהה המשתמש ושמירה בהעדפות
+                int userId = db.getUserId(username);
+                SharedPreferences.Editor editor = requireContext()
+                        .getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                        .edit();
+                editor.putInt("user_id", userId);
+                editor.apply();
+
                 SharedPreferences prefs = requireContext().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
                 boolean settingsDone = prefs.getBoolean("settings_done", false);
 
@@ -57,7 +65,6 @@ public class LoginFragment extends Fragment {
                         settingsDone ? MainActivity.class : SettingsActivity.class);
                 startActivity(intent);
                 requireActivity().finish();
-
             } else {
                 Toast.makeText(getContext(), getString(R.string.login_error_invalid), Toast.LENGTH_SHORT).show();
             }
