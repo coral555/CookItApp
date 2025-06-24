@@ -72,7 +72,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         finishButton.setOnClickListener(v -> {
             prefs.edit().putBoolean("settings_done", true).apply();
-            startActivity(new Intent(SettingsActivity.this, LoginActivity.class));
+            startActivity(new Intent(SettingsActivity.this, MainActivity.class));
             finish();
         });
     }

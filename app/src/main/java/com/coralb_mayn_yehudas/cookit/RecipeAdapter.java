@@ -21,7 +21,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.VH> {
         void onFavoriteToggle(Recipe r);
     }
 
-    private final List<Recipe> data;
+    private List<Recipe> data;
     private final Listener listener;
     private final Context ctx;
 
@@ -31,7 +31,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.VH> {
         this.listener = l;
     }
 
-    @NonNull @Override
+    @NonNull
+    @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(ctx)
                 .inflate(R.layout.item_recipe, parent, false);
@@ -44,16 +45,16 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.VH> {
         h.tvName.setText(r.getName());
         h.tvCategory.setText(r.getCategory());
         h.tvTime.setText(r.getTime());
+
         if (r.getImageUri() != null) {
             h.img.setVisibility(View.VISIBLE);
             h.img.setImageURI(Uri.parse(r.getImageUri()));
         } else {
             h.img.setVisibility(View.GONE);
         }
+
         h.btnFavorite.setImageResource(
-                r.isFavorite()
-                        ? R.drawable.ic_star_filled
-                        : R.drawable.ic_star_outline
+                r.isFavorite() ? R.drawable.ic_star_filled : R.drawable.ic_star_outline
         );
 
         h.btnFavorite.setOnClickListener(v -> listener.onFavoriteToggle(r));
@@ -63,7 +64,15 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.VH> {
     }
 
     @Override
-    public int getItemCount() { return data.size(); }
+    public int getItemCount() {
+        return data.size();
+    }
+
+    // 👇 מתודה חדשה לסינון/ריענון הנתונים
+    public void updateData(List<Recipe> newData) {
+        this.data = newData;
+        notifyDataSetChanged();
+    }
 
     static class VH extends RecyclerView.ViewHolder {
         ImageView img;

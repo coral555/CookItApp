@@ -93,20 +93,24 @@
     <string name="about_package_label">Package</string>
     <string name="about_names">Coral Bahofrker, May Nigri and Yehuda Shmulevitz</string>
 
-    <string name="delete_all_recipes">Delete All Recipes</string>
-    <string name="delete_all_confirmation">Are you sure you want to delete all your recipes?</string>
-    <string name="delete_all_final_warning">This action cannot be undone. Proceed?</string>
-    <string name="deleted_all_recipes">All recipes were successfully deleted</string>
+    <string name="delete_all_recipes">Data Reset</string>
+    <string name="delete_all_confirmation">Are you sure you want to delete all your data?</string>
+    <string name="delete_all_final_warning">⚠️This action cannot be undone. Proceed?</string>
+    <string name="deleted_all_user_data">All your data has been successfully deleted</string>
 
     <string name="duplicate_recipe_error">A recipe with this name already exists in the selected category</string>
 
-    <string name="filter_title">Choose filter type</string>
+    <string name="filter_title">Filter by:</string>
     <string name="filter_name_asc">Name ↑</string>
     <string name="filter_name_desc">Name ↓</string>
     <string name="filter_category_asc">Category ↑</string>
     <string name="filter_category_desc">Category ↓</string>
     <string name="filter_time_asc">Preparation Time ↑</string>
     <string name="filter_time_desc">Preparation Time ↓</string>
+    <string name="filter_favorites">Favorites ★</string>
     <string name="filter">Filter</string>
+
+    <string name="logout_title">Logout</string>
+    <string name="logout_confirm">⚠️Are you sure you want to log out?</string>
 
 </resources>

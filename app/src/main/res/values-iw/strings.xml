@@ -29,7 +29,7 @@
     <string name="signup_email">דוא״ל</string>
     <string name="signup_password">סיסמה</string>
     <string name="signup_button">הרשם</string>
-    <string name="signup_success">ההרשמה הושלמה בהצלחה</string>
+    <string name="signup_success">נרשמת בהצלחה</string>
     <string name="signup_error_exists">שם המשתמש כבר קיים</string>
     <string name="signup_error_empty">נא למלא את כל השדות</string>
     <string name="signup_error_first_name">השם הפרטי חייב להכיל לפחות 2 אותיות באנגלית בלבד</string>
@@ -93,20 +93,24 @@
     <string name="about_package_label">חבילה</string>
     <string name="about_names">קורל בהופרקר, מאי ניגרי ויהודה שמולביץ</string>
 
-    <string name="delete_all_recipes">מחק את כל המתכונים</string>
-    <string name="delete_all_confirmation">האם אתה בטוח שברצונך למחוק את כל המתכונים שלך?</string>
-    <string name="delete_all_final_warning">מחיקה זו לא ניתנת לשחזור. להמשיך?</string>
-    <string name="deleted_all_recipes">כל המתכונים נמחקו בהצלחה</string>
+    <string name="delete_all_recipes">איפוס נתונים</string>
+    <string name="delete_all_confirmation">האם אתה בטוח שברצונך למחוק את כל הנתונים שלך?</string>
+    <string name="delete_all_final_warning">️⚠️פעולה זו לא ניתנת לשחזור. להמשיך?</string>
+    <string name="deleted_all_user_data">כל הנתונים שלך נמחקו בהצלחה</string>
 
     <string name="duplicate_recipe_error">מתכון בשם זה כבר קיים בקטגוריה שנבחרה</string>
 
-    <string name="filter_title">בחר סוג סינון</string>
+    <string name="filter_title">סנן לפי:</string>
     <string name="filter_name_asc">שם ↑</string>
     <string name="filter_name_desc">שם ↓</string>
     <string name="filter_category_asc">קטגוריה ↑</string>
     <string name="filter_category_desc">קטגוריה ↓</string>
     <string name="filter_time_asc">זמן הכנה ↑</string>
     <string name="filter_time_desc">זמן הכנה ↓</string>
+    <string name="filter_favorites">מועדפים ★</string>
     <string name="filter">סינון</string>
+
+    <string name="logout_title">התנתקות</string>
+    <string name="logout_confirm">⚠️האם אתה בטוח שברצונך להתנתק?</string>
 
 </resources>

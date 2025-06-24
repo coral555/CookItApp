@@ -43,19 +43,17 @@ public class SignupFragment extends Fragment {
             String password = passwordInput.getText().toString().trim();
 
             if ( username.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(getContext(), "Please fill all fields", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.signup_error_empty), Toast.LENGTH_SHORT).show();
             } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                Toast.makeText(getContext(), "Please enter a valid email address", Toast.LENGTH_SHORT).show();
-            } else {
+                Toast.makeText(getContext(), getString(R.string.signup_error_email), Toast.LENGTH_SHORT).show();            } else {
                 boolean success = db.insertUser(username, email, password);
                 if (success) {
-                    Toast.makeText(getContext(), "Registration successful", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.signup_success), Toast.LENGTH_SHORT).show();
                     usernameInput.setText("");
                     emailInput.setText("");
                     passwordInput.setText("");
                 } else {
-                    Toast.makeText(getContext(), "Username already exists", Toast.LENGTH_SHORT).show();
-                }
+                    Toast.makeText(getContext(), getString(R.string.signup_error_exists), Toast.LENGTH_SHORT).show();                }
             }
         });
 

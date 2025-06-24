@@ -173,6 +173,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cv.put(COL_RECIPE_STEPS,       steps);
         cv.put(COL_RECIPE_TIME,        time);
         cv.put(COL_RECIPE_IMAGE,       imageUri);
+        cv.put(COL_RECIPE_FAVORITE, 0);
         cv.put(COL_RECIPE_USER_ID,     userId);
         long id = db.insert(TABLE_RECIPES, null, cv);
         return id != -1;
@@ -190,7 +191,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         COL_RECIPE_STEPS + ", " +
                         COL_RECIPE_TIME + ", " +
                         COL_RECIPE_IMAGE + ", " +
-                        COL_RECIPE_FAVORITE +
+                        COL_RECIPE_FAVORITE + ", " +
+                        COL_RECIPE_USER_ID +
                         " FROM " + TABLE_RECIPES +
                         " WHERE user_id=?",
                 new String[]{ String.valueOf(userId) }
@@ -204,7 +206,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     c.getString(4),
                     c.getString(5),
                     c.getString(6),
-                    c.getInt(7) == 1
+                    c.getInt(7) == 1,
+                    c.getInt(8)
             );
             list.add(r);
         }
@@ -222,6 +225,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cv.put(COL_RECIPE_TIME,        r.getTime());
         cv.put(COL_RECIPE_IMAGE,       r.getImageUri());
         cv.put(COL_RECIPE_FAVORITE,    r.isFavorite() ? 1 : 0);
+        cv.put(COL_RECIPE_USER_ID,     r.getUserId());
         int rows = db.update(
                 TABLE_RECIPES,
                 cv,
@@ -247,6 +251,18 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void deleteAllUserData(int userId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            db.delete("recipes", "user_id = ?", new String[]{String.valueOf(userId)});
+            db.delete("categories", "user_id = ?", new String[]{String.valueOf(userId)});
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
     public boolean recipeExists(String name, String category, int userId) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(
@@ -257,4 +273,37 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return exists;
     }
+
+    private Recipe createRecipeFromCursor(Cursor c) {
+        return new Recipe(
+                c.getInt(c.getColumnIndexOrThrow(COL_RECIPE_ID)),
+                c.getString(c.getColumnIndexOrThrow(COL_RECIPE_NAME)),
+                c.getString(c.getColumnIndexOrThrow(COL_RECIPE_CATEGORY)),
+                c.getString(c.getColumnIndexOrThrow(COL_RECIPE_INGREDIENTS)),
+                c.getString(c.getColumnIndexOrThrow(COL_RECIPE_STEPS)),
+                c.getString(c.getColumnIndexOrThrow(COL_RECIPE_TIME)),
+                c.getString(c.getColumnIndexOrThrow(COL_RECIPE_IMAGE)),
+                c.getInt(c.getColumnIndexOrThrow(COL_RECIPE_FAVORITE)) == 1,
+                c.getInt(c.getColumnIndexOrThrow(COL_RECIPE_USER_ID))
+        );
+    }
+
+    public List<Recipe> getFavoriteRecipes(int userId) {
+        List<Recipe> list = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM recipes WHERE user_id=? AND favorite=1", new String[]{String.valueOf(userId)});
+        while (cursor.moveToNext()) {
+            list.add(createRecipeFromCursor(cursor));
+        }
+        cursor.close();
+        return list;
+    }
+
+    public void updateFavorite(int recipeId, int favorite) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("favorite", favorite);
+        db.update("recipes", values, "id = ?", new String[]{String.valueOf(recipeId)});
+    }
+
 }

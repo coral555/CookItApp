@@ -1,6 +1,8 @@
 package com.coralb_mayn_yehudas.cookit;
 
-public class Recipe {
+import java.io.Serializable;
+
+public class Recipe implements Serializable {
 
     private int     id;
     private String  name;
@@ -10,6 +12,7 @@ public class Recipe {
     private String  time;
     private String  imageUri;
     private boolean favorite;
+    private int     userId;
 
     public Recipe(int id,
                   String name,
@@ -18,7 +21,8 @@ public class Recipe {
                   String steps,
                   String time,
                   String imageUri,
-                  boolean favorite) {
+                  boolean favorite,
+                  int userId) {
         this.id          = id;
         this.name        = name;
         this.category    = category;
@@ -27,6 +31,7 @@ public class Recipe {
         this.time        = time;
         this.imageUri    = imageUri;
         this.favorite    = favorite;
+        this.userId      = userId;
     }
 
     // --- getters ---
@@ -39,6 +44,7 @@ public class Recipe {
     public String  getTime()        { return time; }
     public String  getImageUri()    { return imageUri; }
     public boolean isFavorite()     { return favorite; }
+    public int     getUserId()      { return userId; }
 
     // --- setters ---
 
@@ -72,5 +78,9 @@ public class Recipe {
 
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }

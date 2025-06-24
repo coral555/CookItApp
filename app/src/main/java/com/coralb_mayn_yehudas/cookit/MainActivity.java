@@ -17,6 +17,8 @@ import android.widget.Toast;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import java.util.Comparator;
+import android.text.Editable;
+import android.text.TextWatcher;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -54,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
     private Uri selectedImageUri;
 
     private List<Recipe> recipes;
+    private List<Recipe> allRecipes; // מכיל את כל המתכונים
+
     private RecipeAdapter adapter;
 
     private ImageView currentImagePreview;
@@ -76,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        userId = getSharedPreferences("MyPrefs", MODE_PRIVATE).getInt("user_id", -1); // שליפה מההעדפות
+        userId = getSharedPreferences("MyPrefs", MODE_PRIVATE).getInt("user_id", -1);
 
         if (userId == -1) {
             Intent intent = new Intent(this, LoginActivity.class);
@@ -85,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
             finish();
             return;
         }
+
         LocaleHelper.applySavedLocale(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -99,12 +104,13 @@ public class MainActivity extends AppCompatActivity {
         recipesRecyclerView = findViewById(R.id.recipesRecyclerView);
         addRecipeButton     = findViewById(R.id.addRecipeButton);
 
-        db = new DataBaseHelper(this);
-
         menuIcon.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
         navigationView.setNavigationItemSelectedListener(this::onNavItem);
 
-        recipes = db.getAllRecipes(userId);
+        // --- רשימה מלאה של כל המתכונים ---
+        allRecipes = db.getAllRecipes(userId);
+        recipes = new ArrayList<>(allRecipes); // תצוגה נוכחית שמושפעת מסינון
+
         adapter = new RecipeAdapter(this, recipes, new RecipeAdapter.Listener() {
             @Override
             public void onView(Recipe r) {
@@ -127,18 +133,34 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onDelete(Recipe r) {
-                if (db.deleteRecipe(r.getId())) {
-                    recipes.remove(r);
-                    adapter.notifyDataSetChanged();
-                    Toast.makeText(MainActivity.this, R.string.deleted, Toast.LENGTH_SHORT).show();
-                }
+                new Thread(() -> {
+                    if (db.deleteRecipe(r.getId())) {
+                        runOnUiThread(() -> {
+                            allRecipes.remove(r);
+                            recipes.remove(r);
+                            adapter.notifyDataSetChanged();
+                            Toast.makeText(MainActivity.this, R.string.deleted, Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                }).start();
             }
 
             @Override
             public void onFavoriteToggle(Recipe r) {
                 r.setFavorite(!r.isFavorite());
-                db.updateRecipe(r);
-                adapter.notifyDataSetChanged();
+
+                new Thread(() -> {
+                    db.updateRecipe(r);
+
+                    for (Recipe recipe : allRecipes) {
+                        if (recipe.getId() == r.getId()) {
+                            recipe.setFavorite(r.isFavorite());
+                            break;
+                        }
+                    }
+
+                    runOnUiThread(() -> adapter.notifyDataSetChanged());
+                }).start();
             }
         });
 
@@ -150,7 +172,42 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout filterButton = findViewById(R.id.filterButton);
         filterButton.setOnClickListener(v -> showFilterDialog());
 
+        // 💡 חיפוש דינמי עם תהליכון
+        searchInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String query = s.toString().trim().toLowerCase();
+
+                new Thread(() -> {
+                    List<Recipe> filtered;
+
+                    if (query.isEmpty()) {
+                        filtered = new ArrayList<>(allRecipes);
+                    } else {
+                        filtered = new ArrayList<>();
+                        for (Recipe r : allRecipes) {
+                            if (r.getName().toLowerCase().contains(query)) {
+                                filtered.add(r);
+                            }
+                        }
+                    }
+
+                    runOnUiThread(() -> {
+                        recipes.clear();
+                        recipes.addAll(filtered);
+                        adapter.notifyDataSetChanged();
+                    });
+                }).start();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
     }
+
 
     private void showFilterDialog() {
         String[] options = {
@@ -159,26 +216,31 @@ public class MainActivity extends AppCompatActivity {
                 getString(R.string.filter_category_asc),
                 getString(R.string.filter_category_desc),
                 getString(R.string.filter_time_asc),
-                getString(R.string.filter_time_desc)
+                getString(R.string.filter_time_desc),
+                getString(R.string.filter_favorites)
         };
 
         new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.filter_title))
                 .setItems(options, (dialog, which) -> {
+                    // תמיד מתחילים מכל המתכונים מחדש
+                    recipes.clear();
+                    recipes.addAll(allRecipes);
+
                     switch (which) {
-                        case 0: // שם ↑
+                        case 0: // name ↑
                             recipes.sort(Comparator.comparing(Recipe::getName));
                             break;
-                        case 1: // שם ↓
+                        case 1: // name ↓
                             recipes.sort((a, b) -> b.getName().compareTo(a.getName()));
                             break;
-                        case 2: // קטגוריה ↑
+                        case 2: // category ↑
                             recipes.sort(Comparator.comparing(Recipe::getCategory));
                             break;
-                        case 3: // קטגוריה ↓
+                        case 3: // category ↓
                             recipes.sort((a, b) -> b.getCategory().compareTo(a.getCategory()));
                             break;
-                        case 4: // זמן ↑
+                        case 4: // time ↑
                             recipes.sort(Comparator.comparingInt(r -> {
                                 try {
                                     return Integer.parseInt(r.getTime());
@@ -187,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }));
                             break;
-                        case 5: // זמן ↓
+                        case 5: // time ↓
                             recipes.sort((a, b) -> {
                                 try {
                                     return Integer.parseInt(b.getTime()) - Integer.parseInt(a.getTime());
@@ -196,14 +258,17 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             });
                             break;
+                        case 6: // favorites
+                            recipes.clear();
+                            recipes.addAll(db.getFavoriteRecipes(userId));
+                            break;
                     }
+
                     adapter.notifyDataSetChanged();
                 })
                 .setNegativeButton(android.R.string.cancel, null)
                 .show();
     }
-
-
 
     private boolean onNavItem(@NonNull MenuItem item) {
         int id = item.getItemId();
@@ -220,10 +285,10 @@ public class MainActivity extends AppCompatActivity {
                                 .setTitle(R.string.delete_all_recipes)
                                 .setMessage(R.string.delete_all_final_warning)
                                 .setPositiveButton(android.R.string.ok, (dialog2, which2) -> {
-                                    db.deleteAllRecipes(userId);
+                                    db.deleteAllUserData(userId);
                                     recipes.clear();
                                     adapter.notifyDataSetChanged();
-                                    Toast.makeText(this, R.string.deleted_all_recipes, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(this, R.string.deleted_all_user_data, Toast.LENGTH_SHORT).show();
                                 })
                                 .setNegativeButton(android.R.string.cancel, null)
                                 .show();
@@ -231,19 +296,27 @@ public class MainActivity extends AppCompatActivity {
                     .setNegativeButton(android.R.string.cancel, null)
                     .show();
         } else if (id == R.id.nav_exit) {
-            getSharedPreferences("MyPrefs", MODE_PRIVATE)
-                    .edit()
-                    .remove("user_id")
-                    .apply();
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.logout_title)
+                    .setMessage(R.string.logout_confirm)
+                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                        getSharedPreferences("MyPrefs", MODE_PRIVATE)
+                                .edit()
+                                .remove("user_id")
+                                .apply();
 
-            Intent intent = new Intent(this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+                        Intent intent = new Intent(this, LoginActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    })
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show();
             return true;
         } else {
             return false;
         }
+
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -294,8 +367,7 @@ public class MainActivity extends AppCompatActivity {
         EditText timeInput        = dialogView.findViewById(R.id.recipeTime);
         ImageView imagePreview    = dialogView.findViewById(R.id.recipeImage);
         Button pickImageButton    = dialogView.findViewById(R.id.pickImageButton);
-
-        Button deleteImageButton = dialogView.findViewById(R.id.deleteImageButton);
+        Button deleteImageButton  = dialogView.findViewById(R.id.deleteImageButton);
         currentImagePreview = imagePreview;
 
         ArrayList<String> cats = db.getAllCategories(userId);
@@ -320,12 +392,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (cats.get(position).equals(getString(R.string.add_category_option))) {
                     showAddCategoryDialog(categorySpinner, catAdapter, cats);
                 }
             }
-            @Override public void onNothingSelected(AdapterView<?> parent) {}
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
 
         pickImageButton.setOnClickListener(v -> {
@@ -353,7 +428,7 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(title)
                 .setView(dialogView)
-                .setPositiveButton(R.string.dialog_save, null) // נטפל בלחיצה ידנית
+                .setPositiveButton(R.string.dialog_save, null)
                 .setNegativeButton(android.R.string.cancel, null)
                 .create();
 
@@ -372,46 +447,48 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (existing == null && db.recipeExists(name, cat, userId)) {
-                    Toast.makeText(this, getString(R.string.duplicate_recipe_error), Toast.LENGTH_LONG).show();
-                    return;
-                }
+                new Thread(() -> {
+                    if (existing == null) {
+                        if (db.recipeExists(name, cat, userId)) {
+                            runOnUiThread(() -> Toast.makeText(this, R.string.duplicate_recipe_error, Toast.LENGTH_SHORT).show());
+                            return;
+                        }
+                        db.insertRecipe(name, cat, ingr, steps, time, uri, userId);
+                    } else {
+                        boolean nameChanged = !existing.getName().equals(name);
+                        boolean categoryChanged = !existing.getCategory().equals(cat);
+                        if ((nameChanged || categoryChanged) && db.recipeExists(name, cat, userId)) {
+                            runOnUiThread(() -> Toast.makeText(this, R.string.duplicate_recipe_error, Toast.LENGTH_SHORT).show());
+                            return;
+                        }
 
-                if (existing == null) {
-                    // בדיקה למניעת כפילות בהוספה
-                    if (db.recipeExists(name, cat, userId)) {
-                        Toast.makeText(this, R.string.duplicate_recipe_error, Toast.LENGTH_SHORT).show();
-                        return;
+                        existing.setName(name);
+                        existing.setCategory(cat);
+                        existing.setIngredients(ingr);
+                        existing.setSteps(steps);
+                        existing.setTime(time);
+                        existing.setImageUri(uri);
+                        db.updateRecipe(existing);
                     }
-                    db.insertRecipe(name, cat, ingr, steps, time, uri, userId);
-                } else {
-                    // בדיקה רק אם המשתמש שינה את השם או הקטגוריה
-                    boolean nameChanged = !existing.getName().equals(name);
-                    boolean categoryChanged = !existing.getCategory().equals(cat);
-                    if ((nameChanged || categoryChanged) && db.recipeExists(name, cat, userId)) {
-                        Toast.makeText(this, R.string.duplicate_recipe_error, Toast.LENGTH_SHORT).show();
-                        return;
-                    }
 
-                    existing.setName(name);
-                    existing.setCategory(cat);
-                    existing.setIngredients(ingr);
-                    existing.setSteps(steps);
-                    existing.setTime(time);
-                    existing.setImageUri(uri);
-                    db.updateRecipe(existing);
-                }
+                    List<Recipe> updatedList = db.getAllRecipes(userId);
 
-
-                recipes.clear();
-                recipes.addAll(db.getAllRecipes(userId));
-                adapter.notifyDataSetChanged();
-                dialog.dismiss();
+                    runOnUiThread(() -> {
+                        allRecipes.clear();
+                        allRecipes.addAll(updatedList);
+                        recipes.clear();
+                        recipes.addAll(updatedList);
+                        adapter.notifyDataSetChanged();
+                        dialog.dismiss();
+                    });
+                }).start();
             });
         });
 
         dialog.show();
     }
+
+
 
     private void showAddCategoryDialog(@Nullable Spinner spinner, @Nullable ArrayAdapter<String> adapter, @Nullable ArrayList<String> cats) {
         EditText input = new EditText(this);
@@ -427,18 +504,21 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
 
+                    // תהליך רקע – גישה ל־SQLite
                     new Thread(() -> {
-                        AtomicBoolean inserted = new AtomicBoolean(false);
+                        boolean inserted = false;
+
                         if (!db.categoryExists(name, userId)) {
                             db.insertCategory(name, userId);
-                            inserted.set(true);
+                            inserted = true;
                         }
 
                         ArrayList<String> updatedCats = db.getAllCategories(userId);
                         updatedCats.add(getString(R.string.add_category_option));
 
+                        boolean finalInserted = inserted;
                         runOnUiThread(() -> {
-                            if (inserted.get()) {
+                            if (finalInserted) {
                                 Toast.makeText(this, R.string.category_added_success, Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(this, R.string.category_exists, Toast.LENGTH_SHORT).show();
