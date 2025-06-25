@@ -11,7 +11,7 @@
         android:orientation="vertical"
         android:layoutDirection="locale">
 
-        <!-- שם המתכון -->
+        <!-- Recipe Name -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
             android:textDirection="anyRtl"
             android:gravity="start" />
 
-        <!-- בחר קטגוריה -->
+        <!-- Category -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <!-- מרכיבים -->
+        <!-- Ingredients -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
             android:scrollbars="vertical"
             android:textDirection="anyRtl" />
 
-        <!-- שלבי הכנה -->
+        <!-- Preparation Steps -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -83,7 +83,7 @@
             android:scrollbars="vertical"
             android:textDirection="anyRtl" />
 
-        <!-- זמן הכנה -->
+        <!-- Preparation Time -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -99,7 +99,7 @@
             android:inputType="number"
             android:layout_marginTop="4dp" />
 
-        <!-- תמונה -->
+        <!-- Recipe Image Preview -->
         <ImageView
             android:id="@+id/recipeImage"
             android:layout_width="100dp"
@@ -109,16 +109,35 @@
             android:scaleType="centerCrop"
             android:src="@android:drawable/ic_menu_gallery" />
 
-        <!-- כפתור בחירת תמונה -->
-        <Button
-            android:id="@+id/pickImageButton"
-            android:layout_width="wrap_content"
+        <!-- Camera + Gallery Buttons Side-by-Side -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/pick_image"
-            android:layout_gravity="center"
-            android:layout_marginTop="8dp" />
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="4dp">
 
-        <!-- כפתור מחיקת תמונה -->
+            <!-- Take Photo with Camera -->
+            <Button
+                android:id="@+id/pickImageButton"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/pick_image"
+                android:layout_marginEnd="4dp" />
+
+            <!-- Choose from Gallery -->
+            <Button
+                android:id="@+id/selectFromGalleryButton"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/select_from_gallery"
+                android:layout_marginStart="4dp" />
+        </LinearLayout>
+
+        <!-- Delete Selected Image -->
         <Button
             android:id="@+id/deleteImageButton"
             android:layout_width="wrap_content"

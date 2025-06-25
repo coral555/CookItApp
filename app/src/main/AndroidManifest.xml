@@ -2,9 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- Permission to use the device's camera for capturing photos -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" /> <!-- Declares that the camera is optional; app will work even if device has no camera -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/> <!-- Permission to read images from gallery or device file system -->
 
     <application
         android:allowBackup="true"
@@ -28,10 +28,11 @@
         <activity android:name=".LoginActivity" android:exported="true" />
         <activity android:name=".SettingsActivity" />
         <activity android:name=".CameraActivity"/>
+        <activity android:name=".GalleryActivity" />
 
-        <service
-            android:name=".RecipeUpdateService"
-            android:exported="false" />
+        <service android:name=".RecipeUpdateService" android:exported="false" />
+
+        <receiver android:name=".RecipeAlarmReceiver" android:exported="false" />
 
     </application>
 

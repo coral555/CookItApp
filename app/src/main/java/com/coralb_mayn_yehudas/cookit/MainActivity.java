@@ -19,6 +19,9 @@ import android.widget.LinearLayout;
 import java.util.Comparator;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import java.util.Calendar;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -61,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
     private RecipeAdapter adapter;
 
     private ImageView currentImagePreview;
+    private View currentDialogView;
+    private int currentFilterIndex = -1; // אין סינון ברירת מחדל
+
 
     private final ActivityResultLauncher<Intent> cameraLauncher =
             registerForActivityResult(
@@ -73,10 +79,31 @@ public class MainActivity extends AppCompatActivity {
                                 selectedImageUri = Uri.parse(uriString);
                                 currentImagePreview.setImageURI(selectedImageUri);
                                 currentImagePreview.setVisibility(View.VISIBLE);
+                                Button deleteImageButton = currentDialogView.findViewById(R.id.deleteImageButton);
+                                deleteImageButton.setVisibility(View.VISIBLE);
                             }
                         }
                     }
             );
+
+
+    private final ActivityResultLauncher<Intent> galleryCustomLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                            Uri selectedImage = result.getData().getData();
+                            if (selectedImage != null && currentImagePreview != null) {
+                                selectedImageUri = selectedImage;
+                                currentImagePreview.setImageURI(selectedImage);
+                                currentImagePreview.setVisibility(View.VISIBLE);
+                                Button deleteImageButton = currentDialogView.findViewById(R.id.deleteImageButton);
+                                deleteImageButton.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    }
+            );
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +120,8 @@ public class MainActivity extends AppCompatActivity {
         LocaleHelper.applySavedLocale(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        NotificationHelper.createChannel(this);
+        scheduleDailyNotification();
 
         db = new DataBaseHelper(this);
 
@@ -135,15 +164,29 @@ public class MainActivity extends AppCompatActivity {
             public void onDelete(Recipe r) {
                 new Thread(() -> {
                     if (db.deleteRecipe(r.getId())) {
+                        // טוען מחדש את כל המתכונים מה־DB
+                        List<Recipe> updatedList = db.getAllRecipes(userId);
+
                         runOnUiThread(() -> {
-                            allRecipes.remove(r);
-                            recipes.remove(r);
-                            adapter.notifyDataSetChanged();
                             Toast.makeText(MainActivity.this, R.string.deleted, Toast.LENGTH_SHORT).show();
+
+                            allRecipes.clear();
+                            allRecipes.addAll(updatedList);
+
+                            // אם יש סינון פעיל – מריץ אותו שוב (ללא פתיחת דיאלוג)
+                            if (currentFilterIndex != -1) {
+                                runFilterAgain();
+                            } else {
+                                recipes.clear();
+                                recipes.addAll(updatedList);
+                                adapter.notifyDataSetChanged();
+                            }
                         });
                     }
                 }).start();
             }
+
+
 
             @Override
             public void onFavoriteToggle(Recipe r) {
@@ -152,16 +195,16 @@ public class MainActivity extends AppCompatActivity {
                 new Thread(() -> {
                     db.updateRecipe(r);
 
-                    for (Recipe recipe : allRecipes) {
-                        if (recipe.getId() == r.getId()) {
-                            recipe.setFavorite(r.isFavorite());
-                            break;
+                    runOnUiThread(() -> {
+                        if (currentFilterIndex != -1) {
+                            runFilterAgain();
+                        } else {
+                            adapter.notifyDataSetChanged();
                         }
-                    }
-
-                    runOnUiThread(() -> adapter.notifyDataSetChanged());
+                    });
                 }).start();
             }
+
         });
 
         recipesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -189,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         filtered = new ArrayList<>();
                         for (Recipe r : allRecipes) {
-                            if (r.getName().toLowerCase().contains(query)) {
+                            if (r.getName().toLowerCase().startsWith(query)) {
                                 filtered.add(r);
                             }
                         }
@@ -208,7 +251,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     private void showFilterDialog() {
         String[] options = {
                 getString(R.string.filter_name_asc),
@@ -223,42 +265,30 @@ public class MainActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.filter_title))
                 .setItems(options, (dialog, which) -> {
-                    // תמיד מתחילים מכל המתכונים מחדש
+                    currentFilterIndex = which;  // 💡 שמירת סינון נבחר
+
+                    allRecipes = db.getAllRecipes(userId); // 💡 עדכון מה-DB
                     recipes.clear();
                     recipes.addAll(allRecipes);
 
                     switch (which) {
-                        case 0: // name ↑
-                            recipes.sort(Comparator.comparing(Recipe::getName));
-                            break;
-                        case 1: // name ↓
-                            recipes.sort((a, b) -> b.getName().compareTo(a.getName()));
-                            break;
-                        case 2: // category ↑
-                            recipes.sort(Comparator.comparing(Recipe::getCategory));
-                            break;
-                        case 3: // category ↓
-                            recipes.sort((a, b) -> b.getCategory().compareTo(a.getCategory()));
-                            break;
-                        case 4: // time ↑
+                        case 0: recipes.sort(Comparator.comparing(Recipe::getName)); break;
+                        case 1: recipes.sort((a, b) -> b.getName().compareTo(a.getName())); break;
+                        case 2: recipes.sort(Comparator.comparing(Recipe::getCategory)); break;
+                        case 3: recipes.sort((a, b) -> b.getCategory().compareTo(a.getCategory())); break;
+                        case 4:
                             recipes.sort(Comparator.comparingInt(r -> {
-                                try {
-                                    return Integer.parseInt(r.getTime());
-                                } catch (NumberFormatException e) {
-                                    return Integer.MAX_VALUE;
-                                }
+                                try { return Integer.parseInt(r.getTime()); }
+                                catch (NumberFormatException e) { return Integer.MAX_VALUE; }
                             }));
                             break;
-                        case 5: // time ↓
+                        case 5:
                             recipes.sort((a, b) -> {
-                                try {
-                                    return Integer.parseInt(b.getTime()) - Integer.parseInt(a.getTime());
-                                } catch (NumberFormatException e) {
-                                    return 0;
-                                }
+                                try { return Integer.parseInt(b.getTime()) - Integer.parseInt(a.getTime()); }
+                                catch (NumberFormatException e) { return 0; }
                             });
                             break;
-                        case 6: // favorites
+                        case 6:
                             recipes.clear();
                             recipes.addAll(db.getFavoriteRecipes(userId));
                             break;
@@ -268,6 +298,40 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .setNegativeButton(android.R.string.cancel, null)
                 .show();
+    }
+
+    private void runFilterAgain() {
+        if (currentFilterIndex == -1) return;
+
+        allRecipes = db.getAllRecipes(userId);
+        recipes.clear();
+
+        if (currentFilterIndex == 6) {
+            recipes.addAll(db.getFavoriteRecipes(userId));
+        } else {
+            recipes.addAll(allRecipes);
+        }
+
+        switch (currentFilterIndex) {
+            case 0: recipes.sort(Comparator.comparing(Recipe::getName)); break;
+            case 1: recipes.sort((a, b) -> b.getName().compareTo(a.getName())); break;
+            case 2: recipes.sort(Comparator.comparing(Recipe::getCategory)); break;
+            case 3: recipes.sort((a, b) -> b.getCategory().compareTo(a.getCategory())); break;
+            case 4:
+                recipes.sort(Comparator.comparingInt(r -> {
+                    try { return Integer.parseInt(r.getTime()); }
+                    catch (NumberFormatException e) { return Integer.MAX_VALUE; }
+                }));
+                break;
+            case 5:
+                recipes.sort((a, b) -> {
+                    try { return Integer.parseInt(b.getTime()) - Integer.parseInt(a.getTime()); }
+                    catch (NumberFormatException e) { return 0; }
+                });
+                break;
+        }
+
+        adapter.notifyDataSetChanged();
     }
 
     private boolean onNavItem(@NonNull MenuItem item) {
@@ -359,6 +423,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showAddRecipeDialog(@Nullable Recipe existing) {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_recipe, null);
+        currentDialogView = dialogView;
 
         EditText nameInput        = dialogView.findViewById(R.id.recipeName);
         Spinner categorySpinner   = dialogView.findViewById(R.id.recipeCategory);
@@ -368,6 +433,7 @@ public class MainActivity extends AppCompatActivity {
         ImageView imagePreview    = dialogView.findViewById(R.id.recipeImage);
         Button pickImageButton    = dialogView.findViewById(R.id.pickImageButton);
         Button deleteImageButton  = dialogView.findViewById(R.id.deleteImageButton);
+        Button selectFromGalleryButton = dialogView.findViewById(R.id.selectFromGalleryButton);
         currentImagePreview = imagePreview;
 
         ArrayList<String> cats = db.getAllCategories(userId);
@@ -381,14 +447,28 @@ public class MainActivity extends AppCompatActivity {
             ingredientsInput.setText(existing.getIngredients());
             stepsInput.setText(existing.getSteps());
             timeInput.setText(existing.getTime());
+
             int pos = cats.indexOf(existing.getCategory());
             if (pos >= 0) categorySpinner.setSelection(pos);
+
             if (existing.getImageUri() != null) {
+                // Load existing image
                 selectedImageUri = Uri.parse(existing.getImageUri());
                 imagePreview.setImageURI(selectedImageUri);
                 imagePreview.setVisibility(View.VISIBLE);
                 deleteImageButton.setVisibility(View.VISIBLE);
+            } else {
+                // Show default icon if no image exists
+                imagePreview.setImageResource(android.R.drawable.ic_menu_gallery);
+                imagePreview.setVisibility(View.VISIBLE);
+                deleteImageButton.setVisibility(View.GONE);
             }
+        } else {
+            // For new recipe: reset everything
+            selectedImageUri = null;
+            imagePreview.setImageResource(android.R.drawable.ic_menu_gallery);
+            imagePreview.setVisibility(View.VISIBLE);
+            deleteImageButton.setVisibility(View.GONE);
         }
 
         categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -399,9 +479,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            @Override public void onNothingSelected(AdapterView<?> parent) {}
         });
+
+
 
         pickImageButton.setOnClickListener(v -> {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
@@ -414,10 +495,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        selectFromGalleryButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, GalleryActivity.class);
+            galleryCustomLauncher.launch(intent);
+        });
+
         deleteImageButton.setOnClickListener(v -> {
+            // Clear selected image and reset to default icon
             selectedImageUri = null;
-            imagePreview.setImageDrawable(null);
-            imagePreview.setVisibility(View.GONE);
+            imagePreview.setImageResource(android.R.drawable.ic_menu_gallery);
+            imagePreview.setVisibility(View.VISIBLE);
             deleteImageButton.setVisibility(View.GONE);
         });
 
@@ -442,13 +529,27 @@ public class MainActivity extends AppCompatActivity {
                 String time  = timeInput.getText().toString().trim();
                 String uri   = selectedImageUri != null ? selectedImageUri.toString() : null;
 
-                if (name.isEmpty() || cat.isEmpty()) {
+                // Basic input validation
+                if (name.isEmpty() || cat.isEmpty() || ingr.isEmpty() || steps.isEmpty() || time.isEmpty()) {
                     Toast.makeText(this, R.string.dialog_fill_fields, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                int timeValue;
+                try {
+                    timeValue = Integer.parseInt(time);
+                    if (timeValue <= 0) {
+                        Toast.makeText(this, getString(R.string.error_time_positive), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    Toast.makeText(this, getString(R.string.error_time_invalid), Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 new Thread(() -> {
                     if (existing == null) {
+                        // Insertion: check for duplicate
                         if (db.recipeExists(name, cat, userId)) {
                             runOnUiThread(() -> Toast.makeText(this, R.string.duplicate_recipe_error, Toast.LENGTH_SHORT).show());
                             return;
@@ -462,6 +563,7 @@ public class MainActivity extends AppCompatActivity {
                             return;
                         }
 
+                        // Update recipe
                         existing.setName(name);
                         existing.setCategory(cat);
                         existing.setIngredients(ingr);
@@ -472,7 +574,6 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     List<Recipe> updatedList = db.getAllRecipes(userId);
-
                     runOnUiThread(() -> {
                         allRecipes.clear();
                         allRecipes.addAll(updatedList);
@@ -487,7 +588,6 @@ public class MainActivity extends AppCompatActivity {
 
         dialog.show();
     }
-
 
 
     private void showAddCategoryDialog(@Nullable Spinner spinner, @Nullable ArrayAdapter<String> adapter, @Nullable ArrayList<String> cats) {
@@ -537,7 +637,12 @@ public class MainActivity extends AppCompatActivity {
                         });
                     }).start();
                 })
-                .setNegativeButton(android.R.string.cancel, null)
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+                    if (spinner != null && adapter != null && cats != null) {
+                        // Reset selection to "בחר קטגוריה" (index 0)
+                        spinner.setSelection(0);
+                    }
+                })
                 .show();
     }
 
@@ -554,4 +659,26 @@ public class MainActivity extends AppCompatActivity {
             cameraLauncher.launch(new Intent(this, CameraActivity.class));
         }
     }
+
+    private void scheduleDailyNotification() {
+        Intent intent = new Intent(this, RecipeAlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+
+        // notification hour
+        calendar.set(Calendar.HOUR_OF_DAY, 21);
+        calendar.set(Calendar.MINUTE, 10);
+        calendar.set(Calendar.SECOND, 0);
+
+        long triggerAt = calendar.getTimeInMillis();
+        if (System.currentTimeMillis() > triggerAt) {
+            triggerAt += AlarmManager.INTERVAL_DAY;
+        }
+
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent);
+    }
+
 }

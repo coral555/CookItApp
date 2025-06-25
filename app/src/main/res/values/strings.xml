@@ -86,6 +86,11 @@
     <string name="ingredients">Ingredients</string>
     <string name="steps">Steps</string>
     <string name="deleted">Deleted</string>
+    <string name="error_time_positive">Preparation time must be greater than 0</string>
+    <string name="error_time_invalid">Please enter a valid time</string>
+    <string name="select_from_gallery">Select from gallery</string>
+    <string name="gallery_permission_denied">Gallery permission not granted</string>
+    <string name="no_images_found">No images found</string>
 
     <string name="about_os_version">OS Version</string>
     <string name="about_submitted_by">Submitted by</string>
@@ -112,5 +117,10 @@
 
     <string name="logout_title">Logout</string>
     <string name="logout_confirm">⚠️Are you sure you want to log out?</string>
+
+    <string name="notification_title_with_recipe">Recommended recipe for today: %1$s</string>
+    <string name="notification_text_with_recipe">A quick glance might inspire you to cook! 🍴</string>
+    <string name="notification_title_no_recipes">CookIt</string>
+    <string name="notification_text_no_recipes">No recipes yet. Time to add your first one! 🍳</string>
 
 </resources>

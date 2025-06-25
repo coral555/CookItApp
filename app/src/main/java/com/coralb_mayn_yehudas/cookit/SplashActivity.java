@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import java.util.Calendar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,6 +18,9 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        NotificationHelper.createChannel(this);
+        scheduleDailyNotification();
 
         new Handler().postDelayed(() -> {
             SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
@@ -32,4 +38,25 @@ public class SplashActivity extends AppCompatActivity {
 
         }, SPLASH_DISPLAY_LENGTH);
     }
+
+    private void scheduleDailyNotification() {
+        Intent intent = new Intent(this, RecipeAlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+
+        calendar.set(Calendar.HOUR_OF_DAY, 18);
+        calendar.set(Calendar.MINUTE, 15);
+        calendar.set(Calendar.SECOND, 0);
+
+        long triggerAt = calendar.getTimeInMillis();
+        if (System.currentTimeMillis() > triggerAt) {
+            triggerAt += AlarmManager.INTERVAL_DAY;
+        }
+
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent);
+    }
+
 }
