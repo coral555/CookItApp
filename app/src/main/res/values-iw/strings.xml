@@ -105,7 +105,7 @@
 
     <string name="duplicate_recipe_error">מתכון בשם זה כבר קיים בקטגוריה שנבחרה</string>
 
-    <string name="filter_title">סנן לפי:</string>
+    <string name="filter_title">מיין לפי:</string>
     <string name="filter_name_asc">שם ↑</string>
     <string name="filter_name_desc">שם ↓</string>
     <string name="filter_category_asc">קטגוריה ↑</string>
@@ -113,7 +113,7 @@
     <string name="filter_time_asc">זמן הכנה ↑</string>
     <string name="filter_time_desc">זמן הכנה ↓</string>
     <string name="filter_favorites">מועדפים ★</string>
-    <string name="filter">סינון</string>
+    <string name="filter">מיון</string>
 
     <string name="logout_title">התנתקות</string>
     <string name="logout_confirm">⚠️האם אתה בטוח שברצונך להתנתק?</string>
@@ -122,5 +122,7 @@
     <string name="notification_text_with_recipe">הצצה מהירה יכולה לעשות לך חשק לבשל! 🍴</string>
     <string name="notification_title_no_recipes">CookIt</string>
     <string name="notification_text_no_recipes">אין מתכונים עדיין. זה הזמן להוסיף אחד חדש! 🍳</string>
+
+    <string name="app_logo">לוגו של CookIt</string>
 
 </resources>

@@ -1,87 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     android:padding="24dp">
 
-    <!-- username row -->
-    <LinearLayout
-        android:id="@+id/loginUsernameRow"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="8dp"
-            android:src="@drawable/icon_username" />
-
-        <EditText
-            android:id="@+id/loginUsernameEditText"
+        <!-- Username row -->
+        <LinearLayout
+            android:id="@+id/loginUsernameRow"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/login_username"
-            android:backgroundTint="#888888"
-            android:inputType="textPersonName"
-            android:padding="12dp"
-            android:textColor="#000000"
-            android:textColorHint="#AAAAAA" />
-    </LinearLayout>
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-    <!-- password row -->
-    <LinearLayout
-        android:id="@+id/loginPasswordRow"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/loginUsernameRow"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/icon_username" />
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="8dp"
-            android:src="@drawable/icon_password" />
+            <EditText
+                android:id="@+id/loginUsernameEditText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="@color/colorPrimaryDark"
+                android:hint="@string/login_username"
+                android:inputType="textPersonName"
+                android:padding="12dp"
+                android:textAlignment="viewStart"
+                android:textColor="@color/textColorPrimary"
+                android:textColorHint="#AAAAAA" />
+        </LinearLayout>
 
-        <EditText
-            android:id="@+id/loginPasswordEditText"
+        <!-- Password row -->
+        <LinearLayout
+            android:id="@+id/loginPasswordRow"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/login_password"
-            android:backgroundTint="#888888"
-            android:inputType="textPassword"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/loginUsernameRow">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/icon_password" />
+
+            <EditText
+                android:id="@+id/loginPasswordEditText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="@color/colorPrimaryDark"
+                android:hint="@string/login_password"
+                android:inputType="textPassword"
+                android:padding="12dp"
+                android:textAlignment="viewStart"
+                android:textColor="@color/textColorPrimary"
+                android:textColorHint="#AAAAAA" />
+        </LinearLayout>
+
+        <!-- Login button -->
+        <Button
+            android:id="@+id/loginButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="@color/colorPrimary"
             android:padding="12dp"
-            android:textColor="#000000"
-            android:textColorHint="#AAAAAA"
-            android:textDirection="rtl"
-            android:gravity="end"/>
-    </LinearLayout>
-
-    <!-- login button -->
-    <Button
-        android:id="@+id/loginButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/login_button"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="#4CAF50"
-        android:padding="12dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintTop_toBottomOf="@id/loginPasswordRow"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:cornerRadius="30dp" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+            android:text="@string/login_button"
+            android:textColor="@android:color/white"
+            app:cornerRadius="30dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/loginPasswordRow" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

@@ -1,7 +1,34 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+    <!-- בסיס הנושא במצב כהה -->
     <style name="Base.Theme.CookIt" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <!-- צבעים עיקריים -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <!-- רקע כהה -->
+        <item name="android:colorBackground">@color/colorBackground</item>
+
+        <!-- צבע טקסט לבן -->
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+
+        <!-- כפתורים -->
+        <item name="colorButtonNormal">@color/colorPrimary</item>
+        <item name="android:buttonStyle">@style/MyButton</item>
+
+        <!-- טולבר אם קיים -->
+        <item name="toolbarStyle">@style/MyToolbar</item>
+    </style>
+
+    <!-- עיצוב כפתור כהה -->
+    <style name="MyButton" parent="Widget.Material3.Button">
+        <item name="android:backgroundTint">@color/colorPrimary</item>
+        <item name="android:textColor">@color/textColorPrimary</item>
+    </style>
+
+    <!-- טולבר כהה -->
+    <style name="MyToolbar" parent="Widget.Material3.Toolbar">
+        <item name="titleTextColor">@color/textColorPrimary</item>
+        <item name="android:background">@color/colorPrimary</item>
     </style>
 </resources>

@@ -18,15 +18,20 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import android.util.Log;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.File;
 
+/**
+ * Activity for capturing a photo using CameraX API.
+ * Shows camera preview, captures image, and returns image URI to the calling activity.
+ */
 public class CameraActivity extends AppCompatActivity {
-    private PreviewView previewView;
-    private ImageCapture imageCapture;
-    public static final String EXTRA_IMAGE_URI = "capturedImageUri";
+    private PreviewView previewView; // UI element that displays the live camera feed
+    private ImageCapture imageCapture; // Responsible for taking pictures
+    public static final String EXTRA_IMAGE_URI = "capturedImageUri"; // Key for returning the image URI
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,37 +41,44 @@ public class CameraActivity extends AppCompatActivity {
         previewView = findViewById(R.id.previewView);
         Button captureBtn = findViewById(R.id.captureBtn);
 
-        // בקשת הרשאות בזמן ריצה
+        // Check camera permission in runtime
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
+            // Request permission if not
             ActivityCompat.requestPermissions(
                     this,
                     new String[]{ Manifest.permission.CAMERA },
                     1001
             );
         } else {
-            startCamera();
+            startCamera(); // Start the camera if there's a permission
         }
 
-        captureBtn.setOnClickListener(v -> takePhoto());
+        captureBtn.setOnClickListener(v -> takePhoto()); // Set the "Capture" button click listener to take a photo
     }
 
+    /**
+     * Initializes the camera and sets up preview and capture use cases.
+     */
     private void startCamera() {
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture =
                 ProcessCameraProvider.getInstance(this);
 
         cameraProviderFuture.addListener(() -> {
             try {
-                ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
+                ProcessCameraProvider cameraProvider = cameraProviderFuture.get(); // Get the camera provider once it's ready
 
+                // Create preview use case
                 Preview preview = new Preview.Builder().build();
                 preview.setSurfaceProvider(previewView.getSurfaceProvider());
 
-                imageCapture = new ImageCapture.Builder().build();
+                imageCapture = new ImageCapture.Builder().build(); // Create image capture use case
 
-                CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
+                CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA; // Select the back camera
 
-                cameraProvider.unbindAll();
+                cameraProvider.unbindAll(); // Unbind all use cases before rebinding
+
+                // Bind preview and image capture to lifecycle
                 cameraProvider.bindToLifecycle(
                         this,
                         cameraSelector,
@@ -74,22 +86,28 @@ public class CameraActivity extends AppCompatActivity {
                         imageCapture
                 );
             } catch (Exception e) {
-                e.printStackTrace();
+                // Log failure during camera setup
+                Log.e("CameraActivity", "Failed to start camera", e);
             }
         }, ContextCompat.getMainExecutor(this));
     }
 
+    /**
+     * Captures a photo and returns the URI back to the calling activity.
+     */
     private void takePhoto() {
         if (imageCapture == null) return;
 
+        // Create a file to save the photo
         File photoFile = new File(
                 getExternalCacheDir(),
                 "IMG_" + System.currentTimeMillis() + ".jpg"
         );
 
-        ImageCapture.OutputFileOptions outputOptions =
-                new ImageCapture.OutputFileOptions.Builder(photoFile).build();
+        // Configure the output file
+        ImageCapture.OutputFileOptions outputOptions = new ImageCapture.OutputFileOptions.Builder(photoFile).build();
 
+        // Take picture with callback for success and failure
         imageCapture.takePicture(
                 outputOptions,
                 ContextCompat.getMainExecutor(this),
@@ -100,11 +118,11 @@ public class CameraActivity extends AppCompatActivity {
                         Intent resultIntent = new Intent();
                         resultIntent.putExtra(EXTRA_IMAGE_URI, savedUri.toString());
                         setResult(RESULT_OK, resultIntent);
-                        finish();
+                        finish(); // Close this activity
                     }
                     @Override
                     public void onError(@NonNull ImageCaptureException exception) {
-                        exception.printStackTrace();
+                        Log.e("CameraActivity", "Image capture failed", exception); // Log the error and show a message
                         Toast.makeText(
                                 CameraActivity.this,
                                 "Capture failed: " + exception.getMessage(),
@@ -115,6 +133,9 @@ public class CameraActivity extends AppCompatActivity {
         );
     }
 
+    /**
+     * Handles the result of permission request for camera access.
+     */
     @Override
     public void onRequestPermissionsResult(
             int requestCode,
@@ -125,8 +146,8 @@ public class CameraActivity extends AppCompatActivity {
         if (requestCode == 1001
                 && grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            startCamera();
-        } else {
+            startCamera(); // Start camera after permission is granted
+        } else { // Show message and exit if permission is denied
             Toast.makeText(
                     this,
                     "Camera permission is required",

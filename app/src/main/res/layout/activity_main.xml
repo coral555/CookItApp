@@ -110,7 +110,7 @@
             android:layout_height="wrap_content"
             android:src="@android:drawable/ic_input_add"
             android:contentDescription="@string/add_new_recipe"
-            app:backgroundTint="#86848C"
+            app:backgroundTint="#6587de"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_margin="16dp" />

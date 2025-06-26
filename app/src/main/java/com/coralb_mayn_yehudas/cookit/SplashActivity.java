@@ -1,5 +1,6 @@
 package com.coralb_mayn_yehudas.cookit;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -7,15 +8,24 @@ import android.os.Handler;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import java.util.Calendar;
+import android.annotation.SuppressLint;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private static final int SPLASH_DISPLAY_LENGTH = 3000; // 3 שניות
+    private static final int SPLASH_DISPLAY_LENGTH = 3000; // 3 seconds
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Dark mode
+        boolean isDarkMode = getSharedPreferences("AppPrefs", MODE_PRIVATE)
+                .getBoolean("dark_mode", false);
+        AppCompatDelegate.setDefaultNightMode(
+                isDarkMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
+        );
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
@@ -39,6 +49,7 @@ public class SplashActivity extends AppCompatActivity {
         }, SPLASH_DISPLAY_LENGTH);
     }
 
+    @SuppressLint("ScheduleExactAlarm")
     private void scheduleDailyNotification() {
         Intent intent = new Intent(this, RecipeAlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);

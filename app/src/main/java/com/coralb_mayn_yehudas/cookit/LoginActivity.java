@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import androidx.appcompat.app.AppCompatDelegate;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -14,7 +15,14 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        LocaleHelper.applySavedLocale(this);
+        // Dark mode
+        boolean isDarkMode = getSharedPreferences("AppPrefs", MODE_PRIVATE)
+                .getBoolean("dark_mode", false);
+        AppCompatDelegate.setDefaultNightMode(
+                isDarkMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
+        );
+
+        LocaleHelper.applySavedLocale(this); // language
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 

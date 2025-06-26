@@ -42,6 +42,7 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import android.annotation.SuppressLint;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -660,6 +661,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("ScheduleExactAlarm")
     private void scheduleDailyNotification() {
         Intent intent = new Intent(this, RecipeAlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
@@ -669,8 +671,8 @@ public class MainActivity extends AppCompatActivity {
         calendar.setTimeInMillis(System.currentTimeMillis());
 
         // notification hour
-        calendar.set(Calendar.HOUR_OF_DAY, 21);
-        calendar.set(Calendar.MINUTE, 10);
+        calendar.set(Calendar.HOUR_OF_DAY, 15);
+        calendar.set(Calendar.MINUTE, 21);
         calendar.set(Calendar.SECOND, 0);
 
         long triggerAt = calendar.getTimeInMillis();

@@ -1,11 +1,11 @@
 package com.coralb_mayn_yehudas.cookit;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import androidx.core.app.NotificationCompat;
 
 public class NotificationHelper {
@@ -15,18 +15,16 @@ public class NotificationHelper {
     private static final int NOTIFICATION_ID = 1001;
 
     public static void createChannel(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                    CHANNEL_ID,
-                    CHANNEL_NAME,
-                    NotificationManager.IMPORTANCE_DEFAULT
-            );
-            channel.setDescription("Daily recipe suggestions");
-            NotificationManager manager = context.getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(channel);
-        }
+        NotificationChannel channel = new NotificationChannel(
+                CHANNEL_ID,
+                CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_DEFAULT
+        );
+        channel.setDescription("Daily recipe suggestions");
+        NotificationManager manager = context.getSystemService(NotificationManager.class);
+        manager.createNotificationChannel(channel);
     }
-
+    @SuppressLint("MissingPermission")
     public static void showNotification(Context context, String title, String text) {
         // מה קורה בלחיצה על ההתראה – נפתח את MainActivity
         Intent intent = new Intent(context, MainActivity.class);

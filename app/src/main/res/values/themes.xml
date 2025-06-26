@@ -1,9 +1,37 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+    <!-- בסיס נושא -->
     <style name="Base.Theme.CookIt" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- צבעים עיקריים -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <!-- רקע כללי -->
+        <item name="android:colorBackground">@color/colorBackground</item>
+
+        <!-- צבע טקסט -->
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+
+        <!-- כפתורים -->
+        <item name="colorButtonNormal">@color/colorPrimary</item>
+        <item name="android:buttonStyle">@style/MyButton</item>
+
+        <!-- טולבר אם קיים -->
+        <item name="toolbarStyle">@style/MyToolbar</item>
     </style>
 
+    <!-- נושא ראשי יורש מהבסיס -->
     <style name="Theme.CookIt" parent="Base.Theme.CookIt" />
+
+    <!-- עיצוב כפתור מותאם אישית -->
+    <style name="MyButton" parent="Widget.Material3.Button">
+        <item name="android:backgroundTint">@color/colorPrimary</item>
+        <item name="android:textColor">@color/textColorPrimary</item>
+    </style>
+
+    <!-- עיצוב טולבר מותאם (אם קיים) -->
+    <style name="MyToolbar" parent="Widget.Material3.Toolbar">
+        <item name="titleTextColor">@color/textColorPrimary</item>
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
 </resources>

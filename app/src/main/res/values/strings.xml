@@ -105,7 +105,7 @@
 
     <string name="duplicate_recipe_error">A recipe with this name already exists in the selected category</string>
 
-    <string name="filter_title">Filter by:</string>
+    <string name="filter_title">Sort by:</string>
     <string name="filter_name_asc">Name ↑</string>
     <string name="filter_name_desc">Name ↓</string>
     <string name="filter_category_asc">Category ↑</string>
@@ -113,7 +113,7 @@
     <string name="filter_time_asc">Preparation Time ↑</string>
     <string name="filter_time_desc">Preparation Time ↓</string>
     <string name="filter_favorites">Favorites ★</string>
-    <string name="filter">Filter</string>
+    <string name="filter">Sort</string>
 
     <string name="logout_title">Logout</string>
     <string name="logout_confirm">⚠️Are you sure you want to log out?</string>
@@ -122,5 +122,7 @@
     <string name="notification_text_with_recipe">A quick glance might inspire you to cook! 🍴</string>
     <string name="notification_title_no_recipes">CookIt</string>
     <string name="notification_text_no_recipes">No recipes yet. Time to add your first one! 🍳</string>
+
+    <string name="app_logo">CookIt logo</string>
 
 </resources>
