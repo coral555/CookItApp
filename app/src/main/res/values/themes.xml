@@ -1,37 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- בסיס נושא -->
+
+    <!-- Base light theme -->
     <style name="Base.Theme.CookIt" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- צבעים עיקריים -->
+        <!-- Primary branding colors -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-        <!-- רקע כללי -->
+        <!-- App background color -->
         <item name="android:colorBackground">@color/colorBackground</item>
 
-        <!-- צבע טקסט -->
-        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <!-- Dynamic text color for light mode -->
+        <item name="android:textColorPrimary">@color/black</item>
 
-        <!-- כפתורים -->
+        <!-- Default button style -->
         <item name="colorButtonNormal">@color/colorPrimary</item>
         <item name="android:buttonStyle">@style/MyButton</item>
 
-        <!-- טולבר אם קיים -->
+        <!-- Toolbar style -->
         <item name="toolbarStyle">@style/MyToolbar</item>
     </style>
 
-    <!-- נושא ראשי יורש מהבסיס -->
+    <!-- App theme inherits from base -->
     <style name="Theme.CookIt" parent="Base.Theme.CookIt" />
 
-    <!-- עיצוב כפתור מותאם אישית -->
+    <!-- Custom button style -->
     <style name="MyButton" parent="Widget.Material3.Button">
         <item name="android:backgroundTint">@color/colorPrimary</item>
-        <item name="android:textColor">@color/textColorPrimary</item>
+        <item name="android:textColor">@color/black</item>
     </style>
 
-    <!-- עיצוב טולבר מותאם (אם קיים) -->
+    <!-- Custom toolbar style -->
     <style name="MyToolbar" parent="Widget.Material3.Toolbar">
-        <item name="titleTextColor">@color/textColorPrimary</item>
+        <item name="titleTextColor">@color/black</item>
         <item name="android:background">@color/colorPrimary</item>
     </style>
+
 </resources>

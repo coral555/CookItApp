@@ -35,6 +35,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -60,13 +61,13 @@ public class MainActivity extends AppCompatActivity {
     private Uri selectedImageUri;
 
     private List<Recipe> recipes;
-    private List<Recipe> allRecipes; // מכיל את כל המתכונים
+    private List<Recipe> allRecipes; // contains all the recipes of the user
 
     private RecipeAdapter adapter;
 
     private ImageView currentImagePreview;
     private View currentDialogView;
-    private int currentFilterIndex = -1; // אין סינון ברירת מחדל
+    private int currentFilterIndex = -1; // no default sorting
 
 
     private final ActivityResultLauncher<Intent> cameraLauncher =
@@ -144,17 +145,26 @@ public class MainActivity extends AppCompatActivity {
         adapter = new RecipeAdapter(this, recipes, new RecipeAdapter.Listener() {
             @Override
             public void onView(Recipe r) {
+                View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_view_recipe, null);
+
+                ((TextView) view.findViewById(R.id.tvCategory)).setText(r.getCategory());
+                ((TextView) view.findViewById(R.id.tvTime)).setText(r.getTime());
+                ((TextView) view.findViewById(R.id.tvIngredients)).setText(r.getIngredients());
+                ((TextView) view.findViewById(R.id.tvSteps)).setText(r.getSteps());
+
+                ImageView img = view.findViewById(R.id.tvImage);
+                if (r.getImageUri() != null) {
+                    img.setImageURI(Uri.parse(r.getImageUri()));
+                    img.setVisibility(View.VISIBLE);
+                }
+
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle(r.getName())
-                        .setMessage(
-                                getString(R.string.category) + ": " + r.getCategory() + "\n" +
-                                        getString(R.string.time) + ": " + r.getTime() + "\n\n" +
-                                        getString(R.string.ingredients) + ":\n" + r.getIngredients() + "\n\n" +
-                                        getString(R.string.steps) + ":\n" + r.getSteps()
-                        )
+                        .setView(view)
                         .setPositiveButton(android.R.string.ok, null)
                         .show();
             }
+
 
             @Override
             public void onEdit(Recipe r) {
@@ -595,57 +605,72 @@ public class MainActivity extends AppCompatActivity {
         EditText input = new EditText(this);
         input.setHint(R.string.enter_category_name);
 
-        new AlertDialog.Builder(this)
+        AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.add_category_title)
                 .setView(input)
-                .setPositiveButton(R.string.add, (dialog, which) -> {
-                    String name = input.getText().toString().trim();
-                    if (name.isEmpty()) {
-                        Toast.makeText(this, R.string.empty_category, Toast.LENGTH_SHORT).show();
-                        return;
+                .setPositiveButton(R.string.add, null)
+                .setNegativeButton(android.R.string.cancel, null)
+                .create();
+
+        dialog.setOnShowListener(d -> {
+            Button addButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            Button cancelButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+            addButton.setOnClickListener(v -> {
+                String name = input.getText().toString().trim();
+                if (name.isEmpty()) {
+                    Toast.makeText(this, R.string.empty_category, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                new Thread(() -> {
+                    boolean inserted = false;
+                    if (!db.categoryExists(name, userId)) {
+                        db.insertCategory(name, userId);
+                        inserted = true;
                     }
 
-                    // תהליך רקע – גישה ל־SQLite
-                    new Thread(() -> {
-                        boolean inserted = false;
+                    ArrayList<String> updatedCats = db.getAllCategories(userId);
+                    updatedCats.add(getString(R.string.add_category_option));
 
-                        if (!db.categoryExists(name, userId)) {
-                            db.insertCategory(name, userId);
-                            inserted = true;
+                    boolean finalInserted = inserted;
+                    runOnUiThread(() -> {
+                        if (finalInserted) {
+                            Toast.makeText(this, R.string.category_added_success, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(this, R.string.category_exists, Toast.LENGTH_SHORT).show();
                         }
 
-                        ArrayList<String> updatedCats = db.getAllCategories(userId);
-                        updatedCats.add(getString(R.string.add_category_option));
+                        if (spinner != null && adapter != null && cats != null) {
+                            cats.clear();
+                            cats.addAll(updatedCats);
+                            adapter.notifyDataSetChanged();
+                            int pos = cats.indexOf(name);
+                            if (pos >= 0) spinner.setSelection(pos);
+                        }
 
-                        boolean finalInserted = inserted;
-                        runOnUiThread(() -> {
-                            if (finalInserted) {
-                                Toast.makeText(this, R.string.category_added_success, Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(this, R.string.category_exists, Toast.LENGTH_SHORT).show();
-                            }
+                        dialog.dismiss();
+                    });
+                }).start();
+            });
 
-                            if (spinner != null && adapter != null && cats != null) {
-                                cats.clear();
-                                cats.addAll(updatedCats);
-                                adapter.notifyDataSetChanged();
-
-                                int pos = cats.indexOf(name);
-                                if (pos >= 0) {
-                                    spinner.setSelection(pos);
-                                }
-                            }
-                        });
-                    }).start();
-                })
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
-                    if (spinner != null && adapter != null && cats != null) {
-                        // Reset selection to "בחר קטגוריה" (index 0)
+            cancelButton.setOnClickListener(v -> {
+                if (spinner == null) {
+                    dialog.dismiss(); // User clicked "Add Category" directly — allow cancel
+                } else {
+                    if (cats == null || cats.size() <= 1) {
+                        Toast.makeText(this, getString(R.string.must_add_category_first), Toast.LENGTH_SHORT).show();
+                    } else {
                         spinner.setSelection(0);
+                        dialog.dismiss();
                     }
-                })
-                .show();
+                }
+            });
+        });
+
+        dialog.show();
     }
+
 
     @Override
     public void onRequestPermissionsResult(
@@ -671,8 +696,8 @@ public class MainActivity extends AppCompatActivity {
         calendar.setTimeInMillis(System.currentTimeMillis());
 
         // notification hour
-        calendar.set(Calendar.HOUR_OF_DAY, 15);
-        calendar.set(Calendar.MINUTE, 21);
+        calendar.set(Calendar.HOUR_OF_DAY, 11);
+        calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
 
         long triggerAt = calendar.getTimeInMillis();

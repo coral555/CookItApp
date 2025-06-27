@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- תוכן ראשי -->
+    <!-- Main screen content -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
@@ -13,7 +14,7 @@
         android:padding="16dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- כותרת -->
+        <!-- App title -->
         <TextView
             android:id="@+id/mainTitle"
             android:layout_width="wrap_content"
@@ -24,18 +25,18 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- תפריט ההמבורגר -->
+        <!-- Hamburger menu icon -->
         <ImageView
             android:id="@+id/menuIcon"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_menu_sort_by_size"
-            android:contentDescription="menu"
+            android:contentDescription="@string/menu"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_margin="8dp" />
 
-        <!-- חיפוש -->
+        <!-- Search bar -->
         <EditText
             android:id="@+id/searchInput"
             android:layout_width="0dp"
@@ -50,7 +51,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="16dp" />
 
-        <!-- כפתור סינון -->
+        <!-- Filter button -->
         <LinearLayout
             android:id="@+id/filterButton"
             android:layout_width="wrap_content"
@@ -80,7 +81,7 @@
                 android:layout_marginStart="8dp" />
         </LinearLayout>
 
-        <!-- סינון לפי קטגוריה (החץ מוסתר ע"י רקע שקוף) -->
+        <!-- Category filter dropdown -->
         <Spinner
             android:id="@+id/categoryFilter"
             android:layout_width="match_parent"
@@ -91,7 +92,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="8dp" />
 
-        <!-- רשימת מתכונים -->
+        <!-- Recipe list -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recipesRecyclerView"
             android:layout_width="0dp"
@@ -103,7 +104,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="70dp" />
 
-        <!-- כפתור פלוס -->
+        <!-- Add recipe floating button -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/addRecipeButton"
             android:layout_width="wrap_content"
@@ -116,12 +117,14 @@
             android:layout_margin="16dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- תפריט צד -->
+    <!-- Navigation drawer with dark mode support -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigationView"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:menu="@menu/drawer_menu"
-        android:background="@android:color/white" />
+        android:background="@color/drawer_background"
+        app:itemTextColor="@color/drawer_text"
+        app:itemIconTint="@color/drawer_text" />
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <resources>
+
+    <!-- Primary branding colors for light mode -->
     <color name="colorPrimary">#6587de</color>
     <color name="colorPrimaryDark">#4a6bbf</color>
     <color name="colorAccent">#6587de</color>
+
+    <!-- Light background color for the app -->
     <color name="colorBackground">#F0F8FF</color>
+
+    <!-- Primary text color on light background (black) -->
     <color name="textColorPrimary">#000000</color>
+
+    <!-- Navigation drawer colors for light mode -->
+    <color name="drawer_text">#000000</color>
+    <color name="drawer_background">#FFFFFF</color>
+
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+
 </resources>

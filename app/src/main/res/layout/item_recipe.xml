@@ -12,15 +12,16 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:padding="8dp"
+        android:background="@drawable/recipe_card_bg">
 
-        <!-- Recipe Image -->
+        <!-- Recipe Image - regular, without rounded corners -->
         <ImageView
             android:id="@+id/imgRecipe"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:scaleType="centerCrop"
-            android:visibility="gone"
+            android:visibility="visible"
             android:contentDescription="@string/recipe_image"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -43,6 +44,8 @@
             android:id="@+id/tvName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="#000000"
             android:textSize="18sp"
             android:textStyle="bold"
             android:ellipsize="end"
@@ -56,24 +59,28 @@
             android:id="@+id/tvCategory"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="#000000"
             android:textSize="14sp"
             android:ellipsize="end"
             android:maxLines="1"
             app:layout_constraintTop_toBottomOf="@id/tvName"
-            app:layout_constraintStart_toStartOf="@id/tvName"
-            app:layout_constraintEnd_toEndOf="@id/tvName" />
+            app:layout_constraintStart_toEndOf="@id/imgRecipe"
+            app:layout_constraintEnd_toStartOf="@id/btnFavorite" />
 
         <!-- Recipe Time -->
         <TextView
             android:id="@+id/tvTime"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="#000000"
             android:textSize="14sp"
             android:ellipsize="end"
             android:maxLines="1"
             app:layout_constraintTop_toBottomOf="@id/tvCategory"
-            app:layout_constraintStart_toStartOf="@id/tvName"
-            app:layout_constraintEnd_toEndOf="@id/tvName" />
+            app:layout_constraintStart_toEndOf="@id/imgRecipe"
+            app:layout_constraintEnd_toStartOf="@id/btnFavorite" />
 
         <!-- Action Buttons -->
         <LinearLayout
@@ -83,7 +90,7 @@
             android:orientation="horizontal"
             android:gravity="end"
             android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@id/imgRecipe"
+            app:layout_constraintTop_toBottomOf="@id/tvTime"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
@@ -93,21 +100,24 @@
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/view" />
+                android:text="@string/view"
+                android:textColor="#000000" />
 
             <Button
                 android:id="@+id/btnEdit"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/edit" />
+                android:text="@string/edit"
+                android:textColor="#000000" />
 
             <Button
                 android:id="@+id/btnDelete"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/delete" />
+                android:text="@string/delete"
+                android:textColor="#000000" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
