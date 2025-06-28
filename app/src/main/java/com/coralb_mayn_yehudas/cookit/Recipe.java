@@ -2,49 +2,73 @@ package com.coralb_mayn_yehudas.cookit;
 
 import java.io.Serializable;
 
+/**
+ * recipe is a model class representing a recipe entity in the app.
+ * implements serializable to allow passing between activities or fragments.
+ */
 public class Recipe implements Serializable {
+    private int id; // Unique ID of the recipe in the database
+    private String name;  // Name/title of the recipe
+    private String category; // Recipe category
+    private String ingredients; // Ingredients list as a string
+    private String steps; // Cooking/preparation steps
+    private String time; // Preparation time
+    private String imageUri; // URI to the recipe's image (optional)
+    private boolean favorite; // Whether the recipe is marked as favorite
+    private int userId; // ID of the user who owns this recipe
 
-    private int     id;
-    private String  name;
-    private String  category;
-    private String  ingredients;
-    private String  steps;
-    private String  time;
-    private String  imageUri;
-    private boolean favorite;
-    private int     userId;
-
-    public Recipe(int id,
-                  String name,
-                  String category,
-                  String ingredients,
-                  String steps,
-                  String time,
-                  String imageUri,
-                  boolean favorite,
-                  int userId) {
-        this.id          = id;
-        this.name        = name;
-        this.category    = category;
+    /**
+     * Constructs a new Recipe object with all fields initialized.
+     */
+    public Recipe(int id, String name, String category, String ingredients, String steps, String time, String imageUri, boolean favorite, int userId) {
+        this.id = id;
+        this.name = name;
+        this.category = category;
         this.ingredients = ingredients;
-        this.steps       = steps;
-        this.time        = time;
-        this.imageUri    = imageUri;
-        this.favorite    = favorite;
-        this.userId      = userId;
+        this.steps = steps;
+        this.time = time;
+        this.imageUri = imageUri;
+        this.favorite = favorite;
+        this.userId = userId;
     }
 
     // --- getters ---
 
-    public int     getId()          { return id; }
-    public String  getName()        { return name; }
-    public String  getCategory()    { return category; }
-    public String  getIngredients() { return ingredients; }
-    public String  getSteps()       { return steps; }
-    public String  getTime()        { return time; }
-    public String  getImageUri()    { return imageUri; }
-    public boolean isFavorite()     { return favorite; }
-    public int     getUserId()      { return userId; }
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getIngredients() {
+        return ingredients;
+    }
+
+    public String getSteps() {
+        return steps;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public String getImageUri() {
+        return imageUri;
+    }
+
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
 
     // --- setters ---
 

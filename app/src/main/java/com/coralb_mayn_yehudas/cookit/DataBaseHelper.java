@@ -9,6 +9,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * DataBaseHelper class manages local SQLite database interactions for the CookIt app.
+ * It includes tables for users, categories, and recipes, all linked by user_id for multi-user support.
+ */
 public class DataBaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME    = "CookIt.db";
@@ -36,16 +40,19 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String COL_RECIPE_STEPS       = "steps";
     private static final String COL_RECIPE_TIME        = "time";
     private static final String COL_RECIPE_IMAGE       = "imageUri";
-    private static final String COL_RECIPE_FAVORITE    = "favorite";  // 0 or 1
+    private static final String COL_RECIPE_FAVORITE    = "favorite";  // 0 not favorite or 1 favorite
     private static final String COL_RECIPE_USER_ID     = "user_id";
 
     public DataBaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    /**
+     * Called when the database is first created.
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // users
+        // create users table
         db.execSQL(
                 "CREATE TABLE " + TABLE_USERS + " (" +
                         COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -55,7 +62,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         ")"
         );
 
-        // categories
+        // create categories table
         db.execSQL(
                 "CREATE TABLE " + TABLE_CATEGORIES + " (" +
                         COL_CAT_ID       + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -64,7 +71,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         ")"
         );
 
-        // recipes
+        // create recipes table
         db.execSQL(
                 "CREATE TABLE " + TABLE_RECIPES + " (" +
                         COL_RECIPE_ID         + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -80,6 +87,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         );
     }
 
+    /**
+     * Called when the database needs to be upgraded.
+     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
@@ -89,8 +99,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     // ---------- users ----------
-
     public boolean insertUser(String username, String email, String password) {
+        // Opens the database for writing (inserts, updates, deletes)
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COL_USERNAME, username);
@@ -101,6 +111,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean checkUser(String username, String password) {
+        // Opens the database for reading (select queries only)
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.rawQuery(
                 "SELECT 1 FROM " + TABLE_USERS + " WHERE " +
@@ -113,6 +124,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public int getUserId(String username) {
+        // Opens the database for reading (select queries only)
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.rawQuery(
                 "SELECT id FROM " + TABLE_USERS + " WHERE username=?",
@@ -127,8 +139,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     // ---------- categories ----------
-
     public boolean insertCategory(String name, int userId) {
+        // Opens the database for writing (inserts, updates, deletes)
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COL_CAT_NAME, name);
@@ -138,6 +150,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean categoryExists(String name, int userId) {
+        // Opens the database for reading (select queries only)
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.rawQuery(
                 "SELECT 1 FROM " + TABLE_CATEGORIES + " WHERE name=? AND user_id=?",
@@ -150,7 +163,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     public ArrayList<String> getAllCategories(int userId) {
         ArrayList<String> list = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
+        SQLiteDatabase db = getReadableDatabase(); // Opens the database for reading (select queries only)
         Cursor c = db.rawQuery(
                 "SELECT name FROM " + TABLE_CATEGORIES + " WHERE user_id=?",
                 new String[]{ String.valueOf(userId) }
@@ -163,9 +176,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     // ---------- recipes ----------
-
     public boolean insertRecipe(String name, String category, String ingredients, String steps, String time, String imageUri, int userId) {
-        SQLiteDatabase db = getWritableDatabase();
+        SQLiteDatabase db = getWritableDatabase(); // Opens the database for writing (inserts, updates, deletes)
         ContentValues cv = new ContentValues();
         cv.put(COL_RECIPE_NAME,        name);
         cv.put(COL_RECIPE_CATEGORY,    category);
@@ -181,7 +193,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     public List<Recipe> getAllRecipes(int userId) {
         List<Recipe> list = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
+        SQLiteDatabase db = getReadableDatabase(); // Opens the database for reading (select queries only)
         Cursor c = db.rawQuery(
                 "SELECT " +
                         COL_RECIPE_ID + ", " +
@@ -216,7 +228,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean updateRecipe(Recipe r) {
-        SQLiteDatabase db = getWritableDatabase();
+        SQLiteDatabase db = getWritableDatabase(); // Opens the database for writing (inserts, updates, deletes)
         ContentValues cv = new ContentValues();
         cv.put(COL_RECIPE_NAME,        r.getName());
         cv.put(COL_RECIPE_CATEGORY,    r.getCategory());
@@ -236,7 +248,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean deleteRecipe(int recipeId) {
-        SQLiteDatabase db = getWritableDatabase();
+        SQLiteDatabase db = getWritableDatabase(); // Opens the database for writing (inserts, updates, deletes)
         int rows = db.delete(
                 TABLE_RECIPES,
                 COL_RECIPE_ID + "=?",
@@ -245,14 +257,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return rows > 0;
     }
 
-    public void deleteAllRecipes(int userId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_RECIPES, "user_id=?", new String[]{ String.valueOf(userId) });
-        db.close();
-    }
-
     public void deleteAllUserData(int userId) {
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getWritableDatabase(); // Opens the database for writing (inserts, updates, deletes)
         db.beginTransaction();
         try {
             db.delete("recipes", "user_id = ?", new String[]{String.valueOf(userId)});
@@ -264,7 +270,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean recipeExists(String name, String category, int userId) {
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase db = this.getReadableDatabase(); // Opens the database for reading (select queries only)
         Cursor cursor = db.rawQuery(
                 "SELECT id FROM recipes WHERE name=? AND category=? AND user_id=?",
                 new String[]{ name, category, String.valueOf(userId) }
@@ -290,20 +296,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     public List<Recipe> getFavoriteRecipes(int userId) {
         List<Recipe> list = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
+        SQLiteDatabase db = getReadableDatabase(); // Opens the database for reading (select queries only)
+        // Executes a raw SQL query to select all favorite recipes for the given user
         Cursor cursor = db.rawQuery("SELECT * FROM recipes WHERE user_id=? AND favorite=1", new String[]{String.valueOf(userId)});
-        while (cursor.moveToNext()) {
+        while (cursor.moveToNext()) { // Iterates over the result set and converts each row into a Recipe object
             list.add(createRecipeFromCursor(cursor));
         }
-        cursor.close();
+        cursor.close(); // close the cursor to avoid memory leaks
         return list;
-    }
-
-    public void updateFavorite(int recipeId, int favorite) {
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("favorite", favorite);
-        db.update("recipes", values, "id = ?", new String[]{String.valueOf(recipeId)});
     }
 
 }

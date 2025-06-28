@@ -13,13 +13,19 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * SplashActivity displays a splash screen for a few seconds on app launch.
+ * It applies theme settings, sets up the daily recipe notification,
+ * and then routes the user to either SettingsActivity (on first launch)
+ * or LoginActivity (on subsequent launches).
+ */
 public class SplashActivity extends AppCompatActivity {
 
     private static final int SPLASH_DISPLAY_LENGTH = 3000; // 3 seconds
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Dark mode
+        // Apply dark mode setting based on stored preference
         boolean isDarkMode = getSharedPreferences("AppPrefs", MODE_PRIVATE)
                 .getBoolean("dark_mode", false);
         AppCompatDelegate.setDefaultNightMode(
@@ -29,6 +35,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        // Initialize notification channel and daily alarm
         NotificationHelper.createChannel(this);
         scheduleDailyNotification();
 
@@ -37,18 +44,22 @@ public class SplashActivity extends AppCompatActivity {
             boolean settingsDone = prefs.getBoolean("settings_done", false);
 
             Intent intent;
-            if (!settingsDone) {
+            if (!settingsDone) { // if first launch → show settings screen
                 intent = new Intent(SplashActivity.this, SettingsActivity.class);
-            } else {
+            } else { // otherwise → go to login screen
                 intent = new Intent(SplashActivity.this, LoginActivity.class);
             }
 
             startActivity(intent);
-            finish();
+            finish();  // close splash activity so user can't return to it
 
         }, SPLASH_DISPLAY_LENGTH);
     }
 
+    /**
+     * Schedules a daily notification at a specific time (11:00 am).
+     * The notification suggests a recipe based on user data.
+     */
     @SuppressLint("ScheduleExactAlarm")
     private void scheduleDailyNotification() {
         Intent intent = new Intent(this, RecipeAlarmReceiver.class);
@@ -64,9 +75,8 @@ public class SplashActivity extends AppCompatActivity {
 
         long triggerAt = calendar.getTimeInMillis();
         if (System.currentTimeMillis() > triggerAt) {
-            triggerAt += AlarmManager.INTERVAL_DAY;
+            triggerAt += AlarmManager.INTERVAL_DAY; // Schedule for next day if time has passed
         }
-
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent);
     }
 

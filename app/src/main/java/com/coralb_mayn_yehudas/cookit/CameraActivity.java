@@ -54,7 +54,7 @@ public class CameraActivity extends AppCompatActivity {
             startCamera(); // Start the camera if there's a permission
         }
 
-        captureBtn.setOnClickListener(v -> takePhoto()); // Set the "Capture" button click listener to take a photo
+        captureBtn.setOnClickListener(v -> takePhoto()); // Set the capture button click listener to take a photo
     }
 
     /**
