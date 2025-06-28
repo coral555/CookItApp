@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    This file defines the navigation drawer menu items.
+    It includes four options: About, Settings, Delete All Recipes, and Exit.
+-->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- About: Shows app information -->
     <item
         android:id="@+id/nav_about"
         android:title="@string/about"
         android:icon="@android:drawable/ic_menu_info_details" />
+
+    <!-- Settings: Opens the app's settings screen -->
     <item
         android:id="@+id/nav_settings"
         android:title="@string/settings"
         android:icon="@android:drawable/ic_menu_preferences" />
+
+    <!-- Delete All Recipes: Deletes all user recipes with confirmation -->
     <item
         android:id="@+id/nav_delete_all"
         android:icon="@android:drawable/ic_menu_delete"
         android:title="@string/delete_all_recipes" />
+
+    <!-- Exit: Logs out the user and returns to login screen -->
     <item
         android:id="@+id/nav_exit"
         android:title="@string/exit"

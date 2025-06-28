@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Settings screen layout -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp">
 
+    <!-- Theme selection label -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -12,12 +14,14 @@
         android:textSize="18sp"
         android:layout_marginBottom="8dp"/>
 
+    <!-- Dark mode toggle switch -->
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/themeSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/settings_dark_mode" />
 
+    <!-- Language selection label -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,11 +30,13 @@
         android:layout_marginTop="24dp"
         android:layout_marginBottom="8dp"/>
 
+    <!-- Language selector (English / Hebrew) -->
     <Spinner
         android:id="@+id/languageSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <!-- Finish and save button -->
     <Button
         android:id="@+id/finishButton"
         android:layout_width="match_parent"

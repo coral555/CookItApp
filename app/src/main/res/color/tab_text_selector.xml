@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Selector file for tab or button text color.
+    This file dynamically changes the color of text/icons based on interaction state:
+    - Selected
+    - Pressed
+    - Focused
+    - Default
+-->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- when the tab is chosen or clicked -->
     <item android:state_selected="true" android:color="@color/colorPrimary" />

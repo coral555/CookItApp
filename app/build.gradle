@@ -43,7 +43,6 @@ dependencies {
     // AndroidX Activity Result API
     implementation "androidx.activity:activity-ktx:1.7.0"
 
-    // (ואם צריך) במידה ואת משתמשת ב־FragmentResult:
     implementation "androidx.fragment:fragment-ktx:1.5.7"
 
 
