@@ -22,20 +22,17 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.VH> {
      * Listener interface to handle user actions on each recipe item.
      */
     public interface Listener {
-        void onView(Recipe r);  // Triggered when the user wants to view details
-
+        void onView(Recipe r); // Triggered when the user wants to view details
         void onEdit(Recipe r); // Triggered when editing a recipe
-
-        void onDelete(Recipe r); // Triggered when deleting a recipe
-
-        void onFavoriteToggle(Recipe r); // Triggered when toggling the favorite status
+        void onDelete(Recipe r);  // Triggered when deleting a recipe
+        void onFavoriteToggle(Recipe r);  // Triggered when toggling the favorite status
     }
 
     private List<Recipe> data; // The list of recipes to display
     private final Listener listener; // Listener for item actions
     private final Context ctx; // Context for inflating views and accessing resources
 
-    //Constructor
+    // Constructor
     public RecipeAdapter(Context ctx, List<Recipe> data, Listener l) {
         this.ctx = ctx;
         this.data = data;
@@ -54,10 +51,17 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.VH> {
     @Override
     public void onBindViewHolder(@NonNull VH h, int i) {
         Recipe r = data.get(i);
-        // Set text fields
+
+        // Set text fields with localized formatting
         h.tvName.setText(r.getName());
-        h.tvCategory.setText(r.getCategory());
-        h.tvTime.setText(r.getTime());
+
+        // Set category label using string resource ("Category: Salad")
+        String categoryText = ctx.getString(R.string.label_category, r.getCategory());
+        h.tvCategory.setText(categoryText);
+
+        // Set preparation time label using string resource ("Preparation time: 10 minutes")
+        String timeText = ctx.getString(R.string.label_time, r.getTime());
+        h.tvTime.setText(timeText);
 
         // Load image if available
         if (r.getImageUri() != null) {
@@ -71,6 +75,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.VH> {
         h.btnFavorite.setImageResource(
                 r.isFavorite() ? R.drawable.ic_star_filled : R.drawable.ic_star_outline
         );
+
         // Set click listeners for buttons
         h.btnFavorite.setOnClickListener(v -> listener.onFavoriteToggle(r));
         h.btnView.setOnClickListener(v -> listener.onView(r));
@@ -83,6 +88,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.VH> {
         return data.size();
     }
 
+    // Updates the list of recipes and refreshes the UI
     public void updateData(List<Recipe> newData) {
         this.data = newData;
         notifyDataSetChanged();

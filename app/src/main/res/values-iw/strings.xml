@@ -128,4 +128,7 @@
     <string name="must_add_category_first">יש להוסיף לפחות קטגוריה אחת לפני שניתן להמשיך</string>
     <string name="menu">תפריט</string>
 
+    <string name="label_category">קטגוריה: %1$s</string>
+    <string name="label_time">זמן הכנה: %1$s דקות</string>
+
 </resources>

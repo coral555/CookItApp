@@ -128,4 +128,7 @@
     <string name="must_add_category_first">You must add at least one category before you can continue</string>
     <string name="menu">Menu</string>
 
+    <string name="label_category">Category: %1$s</string>
+    <string name="label_time">Preparation time: %1$s minutes</string>
+
 </resources>

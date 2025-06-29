@@ -15,7 +15,7 @@
         android:padding="8dp"
         android:background="@drawable/recipe_card_bg">
 
-        <!-- Recipe Image - regular, without rounded corners -->
+        <!-- Recipe Image -->
         <ImageView
             android:id="@+id/imgRecipe"
             android:layout_width="80dp"
@@ -54,7 +54,7 @@
             app:layout_constraintStart_toEndOf="@id/imgRecipe"
             app:layout_constraintEnd_toStartOf="@id/btnFavorite" />
 
-        <!-- Recipe Category -->
+        <!-- Recipe Category with label -->
         <TextView
             android:id="@+id/tvCategory"
             android:layout_width="0dp"
@@ -68,7 +68,7 @@
             app:layout_constraintStart_toEndOf="@id/imgRecipe"
             app:layout_constraintEnd_toStartOf="@id/btnFavorite" />
 
-        <!-- Recipe Time -->
+        <!-- Recipe Time with label -->
         <TextView
             android:id="@+id/tvTime"
             android:layout_width="0dp"

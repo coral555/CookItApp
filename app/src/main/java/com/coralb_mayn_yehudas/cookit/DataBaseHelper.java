@@ -85,6 +85,54 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         COL_RECIPE_USER_ID    + " INTEGER" +
                         ")"
         );
+
+        // Insert default user
+        ContentValues userValues = new ContentValues();
+        userValues.put(COL_USERNAME, "test");
+        userValues.put(COL_EMAIL, "test@test.com");
+        userValues.put(COL_PASSWORD, "12345");
+        long userId = db.insert(TABLE_USERS, null, userValues);
+
+        // Add default categories for this user
+        String[] defaultCategories = new String[]{"Salad", "Dessert", "Soup"};
+        for (String cat : defaultCategories) {
+            ContentValues catValues = new ContentValues();
+            catValues.put(COL_CAT_NAME, cat);
+            catValues.put(COL_CAT_USER_ID, userId);
+            db.insert(TABLE_CATEGORIES, null, catValues);
+        }
+
+        // Add 3 sample recipes
+        ContentValues r1 = new ContentValues();
+        r1.put(COL_RECIPE_NAME, "Greek Salad");
+        r1.put(COL_RECIPE_CATEGORY, "Salad");
+        r1.put(COL_RECIPE_INGREDIENTS, "Tomatoes, Cucumber, Feta, Olives, Onion");
+        r1.put(COL_RECIPE_STEPS, "1. Chop vegetables\n2. Mix\n3. Add cheese & olives");
+        r1.put(COL_RECIPE_TIME, "10");
+        r1.put(COL_RECIPE_IMAGE, (String) null);
+        r1.put(COL_RECIPE_USER_ID, userId);
+        db.insert(TABLE_RECIPES, null, r1);
+
+        ContentValues r2 = new ContentValues();
+        r2.put(COL_RECIPE_NAME, "Chocolate Mug Cake");
+        r2.put(COL_RECIPE_CATEGORY, "Dessert");
+        r2.put(COL_RECIPE_INGREDIENTS, "Flour, Cocoa, Sugar, Milk, Oil");
+        r2.put(COL_RECIPE_STEPS, "1. Mix all in mug\n2. Microwave 1.5 min");
+        r2.put(COL_RECIPE_TIME, "5");
+        r2.put(COL_RECIPE_IMAGE, (String) null);
+        r2.put(COL_RECIPE_USER_ID, userId);
+        db.insert(TABLE_RECIPES, null, r2);
+
+        ContentValues r3 = new ContentValues();
+        r3.put(COL_RECIPE_NAME, "Tomato Soup");
+        r3.put(COL_RECIPE_CATEGORY, "Soup");
+        r3.put(COL_RECIPE_INGREDIENTS, "Tomatoes, Onion, Garlic, Cream");
+        r3.put(COL_RECIPE_STEPS, "1. Cook tomatoes\n2. Blend\n3. Add cream & serve");
+        r3.put(COL_RECIPE_TIME, "20");
+        r3.put(COL_RECIPE_IMAGE, (String) null);
+        r3.put(COL_RECIPE_USER_ID, userId);
+        db.insert(TABLE_RECIPES, null, r3);
+
     }
 
     /**
